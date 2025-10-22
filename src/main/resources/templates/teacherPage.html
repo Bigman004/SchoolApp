@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmyelead.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+		@font-face {
+		  font-family: myFont;
+		  src: url(fonts/Roboto-Regular.ttf);
+		}
+		@font-face {
+		  font-family: f;
+		  src: url(fonts/Roboto-Bold.ttf);
+		}
+		body {
+		  background-color: #f1f5f8;
+		  color: #003d5b;
+		  font-family: myFont;flex-direction: column;
+		  display: flex;
+		  gap:2em;
+		}
+		.teacher-info {
+		  display: flex;
+		  gap: 1.5em;
+		}
+		.teacher-image {
+		  width: 128px;
+		  height: 128px;
+		}
+		.teacher-info-content {
+		  display: flex;
+		  flex-direction: column;
+		  gap: 1.5em;
+		}
+		.text {
+		  border: solid 2px #c0c0c0;
+		  background-color: #ffff;
+		  padding: 0.5em;
+		  border-radius: 10px;
+		}
+		.control-bar{
+			background-color: #f9ac00;
+			border : solid 1.5px #2a7d8f;
+			margin-bottom: 16px;
+		}
+		.student-info{
+			display: flex;
+			flex-direction: column;
+		}
+		.control-action{
+		  float: right;
+		  text-decoration: none;
+		  padding: 0.3em;
+		  background-color: #ffff;
+		  padding: 0.5em;
+		  border-radius: 10px;
+		  border: solid 2px #c0c0c0;
+		  margin: 12px 12px;
+		}
+		.control-action:hover {
+		  background-color: #c0c0c0;
+		  border: solid 2px #ffff;
+		}
+		
+		.student-data{
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+			gap: 0px;
+			border: 1px solid #fff;
+		}
+
+	</style>
+  </head>
+  <body>
+    <div class="teacher-info">
+      <img
+        src="images/teacher-logo.png"
+        alt="teachers-logo"
+        class="teacher-image"
+      />
+      <div class="teacher-info-content">
+        <div class="text">name: Teacher name</div>
+        <div class="text">email: Teachers email</div>
+        <div class="text">class: class of teacher</div>
+      </div>
+    </div>
+    <div class="student-info">
+      <div class="control-bar">
+		<a th:href="@{/add_student}" class = "control-action"> add student</a>
+		</div>
+	  <div th:each = "student: ${studentList}" class ="list"> 
+		<div class ="student-data">	
+	  	  <div th:text="${student.firstName}"></div>	
+		  <div th:text ="${student.lastName}"></div>
+		  <div th:text="${student.stateOfOrigin}"></div>
+		  <div th:text ="${student.LGA}"></div>
+		  <div th:text="${student.parentPhone}"></div>
+		  <a th:href="@{/edit/{studentId}(studentId =${student.Id})}"> edit</a>
+		  <a th:href="@{/{studentId}/result_page(studentId =${student.Id})}"> results</a>
+		  
+		 </div> 	  	  			
+		</div>
+    </div>
+  </body>
+</html>
