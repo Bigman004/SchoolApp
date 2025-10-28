@@ -1,11 +1,13 @@
 package com.example.SchoolApp.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.example.SchoolApp.model.Student;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 
-@Builder
+
 @Data
 public class ResultDto {
 	private Long Id;

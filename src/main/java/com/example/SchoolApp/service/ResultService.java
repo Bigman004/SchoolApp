@@ -1,6 +1,7 @@
 package com.example.SchoolApp.service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,49 @@ public class ResultService {
 				return result.getId();
 		}
 		return null;
+	}
+	public List<ResultDto> ResultByTerm(String term){
+		List<Result> list = resultRepository.findAllByTerm(term);
+		return list.stream()
+				.map(result -> mapToResultDto(result))
+				.collect(Collectors.toList());
+	}
+	
+	private ResultDto mapToResultDto(Result result) {
+		ResultDto resultDto =  new ResultDto();
+		resultDto.setBasicScience(result.getBasicScience());
+		resultDto.setCivicEducation(result.getCivicEducation());
+		resultDto.setCRK(result.getCRK());
+		resultDto.setEnglish(result.getEnglish());
+		resultDto.setId(result.getId());
+		resultDto.setMath(result.getMath());
+		resultDto.setPHE(result.getPHE());
+		resultDto.setSocialStudies(result.getSocialStudies());
+		resultDto.setTerm(result.getTerm());
+		resultDto.setStudentId(result.getStudent().getId());
+		return resultDto;
+	}
+	public List<ResultDto> getStudentResult(Long studentId){
+		List<Result> results = studentRepository.findById(studentId).get().getResults();
+		return results.stream().
+				map(result -> mapToResultDto(result))
+				.collect(Collectors.toList());
+		
+	}
+	public void selectionSort(ArrayList<ResultDto> resultArrayList) {
+		ResultDto temp;
+		for(int i =0; i < resultArrayList.size(); i++) {
+			int min = i;
+			int j = i;
+			while(j < resultArrayList.size()) {
+				if(resultArrayList.get(min).getId() > resultArrayList.get(j).getId() )
+					min = j;
+				j++;
+			}
+			temp = resultArrayList.get(i);
+			resultArrayList.set(i, resultArrayList.get(min));
+			resultArrayList.set(min, temp);
+		}
+		return;
 	}
 }

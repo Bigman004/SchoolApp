@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.SchoolApp.dto.ResultDto;
@@ -83,7 +84,7 @@ public class StudentService {
 
 			}
 	public ArrayList<StudentDto> StudentList(){
-		List<Student> list = studentRepo.findAll();
+		List<Student> list = studentRepo.findAll(Sort.by("id"));
 		ArrayList<StudentDto> stdList = new ArrayList<>();
 		for(Student std:list) {
 			stdList.add(mapToStudentDto(std));
@@ -133,7 +134,7 @@ public class StudentService {
 		return;
 	}
 	public StudentDto getStudentDtoById(Long Id) {
-		Student std = studentRepo.findById(Id).orElseThrow();
+		Student std = studentRepo.findById(Id).get();
 		return StudentDto.builder()
 				.Id(std.getId())
 				.dateOfBirth(std.getDateOfBirth())
@@ -146,25 +147,6 @@ public class StudentService {
 				.build();
 
 	}
-	public List<ResultDto> getStudentResult(Long studentId){
-		List<Result> results = studentRepo.findById(studentId).get().getResults();
-		return results.stream().
-				map(result -> mapToResultDto(result))
-				.collect(Collectors.toList());
-		
-	}
-	private ResultDto mapToResultDto(Result result) {
-		return ResultDto.builder()
-				.basicScience(result.getBasicScience())
-				.civicEducation(result.getCivicEducation())
-				.CRK(result.getCRK())
-				.english(result.getEnglish())
-				.Id(result.getId())
-				.math(result.getMath())
-				.PHE(result.getPHE())
-				.socialStudies(result.getSocialStudies())
-				.term(result.getTerm())
-				.studentId(result.getStudent().getId())
-				.build();
-	}
+	
+
 }
