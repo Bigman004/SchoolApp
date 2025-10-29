@@ -5,12 +5,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.SchoolApp.dto.RegistrationDto;
@@ -65,5 +67,14 @@ public class AuthController {
 		System.out.println(cookie.getValue());
 		return new ResponseEntity<>("login successful", HttpStatus.OK);
 	
+	}
+	
+	@Secured("TEACHER")
+	@PostMapping("/change_password")
+	public ResponseEntity<?> changePassword(@RequestBody RegistrationDto user,
+			@RequestParam(value ="password") String password){
+		System.out.println(password +" "+ user );
+		System.out.println(userService.changePassword(password, user));
+		return new ResponseEntity<String>("change password success", HttpStatus.OK);
 	}
 }

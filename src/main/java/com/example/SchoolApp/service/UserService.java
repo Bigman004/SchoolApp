@@ -1,6 +1,7 @@
 package com.example.SchoolApp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,10 @@ import com.example.SchoolApp.model.Role;
 import com.example.SchoolApp.model.UserEntity;
 import com.example.SchoolApp.repository.RoleRepository;
 import com.example.SchoolApp.repository.UserRepository;
+
+import io.jsonwebtoken.Jwt;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class UserService {
@@ -55,6 +60,28 @@ public class UserService {
 		if(authentication.isAuthenticated())
 			return tokenService.generateToken(user.getRegistrationNumber());
 		return "failure";
+		
+	}
+	/***
+	 * this method changes the password in the user database verify the session for the user
+	 *in the cookie
+	 * @param request from the client computer to verify the session
+	 * @param password retrieved from the front end
+	 * @return
+	 */
+	public boolean changePassword(String password, RegistrationDto user) {
+		UserEntity userEntity;
+		Authentication authentication = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(user.getRegistrationNumber(), 
+							user.getPassword()));
+		if(authentication.isAuthenticated()) {
+			userEntity = userRepository.findByRegistrationNumber(user.getRegistrationNumber());
+			userEntity.setPassword(passwordEncoder.encode(password));
+			userRepository.save(userEntity);
+			return true;
+		}
+		else
+			return false;
 		
 	}
 	
