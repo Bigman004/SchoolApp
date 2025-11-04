@@ -46,6 +46,11 @@ public class StudentController {
 		
 		return new ResponseEntity<>(new WrapperRequest(studentList, teacherService.getTeacher()), HttpStatus.OK);
 	}
+	@GetMapping("/teacherInfo")
+	@Secured("TEACHER")
+	public ResponseEntity<?> teacherDetails(){
+		return new ResponseEntity<>(teacherService.getTeacher(), HttpStatus.OK);
+	}
 	@Secured("TEACHER")
 	@GetMapping("/add_student")
 	public ResponseEntity<?> add_Student(Model model) {
