@@ -60,12 +60,14 @@ public class AuthController {
 		ResponseCookie cookie = ResponseCookie.from("authToken", token)
 				.httpOnly(true)
 				.secure(true)
+				.secure(true)
 				.path("/")
-				.sameSite("Strict")
+				.sameSite("None")
+				.domain("java-application-latest-ywhd.onrender.com")
 				.build();
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 		System.out.println(cookie.getValue());
-		return new ResponseEntity<>("login successful", HttpStatus.OK);
+		return new ResponseEntity<>(token, HttpStatus.OK);
 	
 	}
 	

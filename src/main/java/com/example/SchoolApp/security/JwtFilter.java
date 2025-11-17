@@ -38,45 +38,38 @@ public class JwtFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String authHeader = request.getHeader("Authorization");
 		String token = null;
-		String username =  null;
+		String username = null;
 		
-//		if(authHeader != null && authHeader.startsWith("Bearer")) {
-//			token = authHeader.substring(7);
-//			username  = jwt.extractUsername(token);
-//		  
-//		}
+		// Skip filter for login endpoint
 		if(request.getRequestURI().equals("/login")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		if(request.getCookies() != null) {
-			for(Cookie cookie : request.getCookies()) {
-				if("authToken".equals(cookie.getName())) {
-					token = cookie.getValue();
-					break;
-				}
-			}
-		}
-		if(token != null) {
+		
+		// Extract token from Bearer header
+		if(authHeader != null && authHeader.startsWith("Bearer ")) {
+			token = authHeader.substring(7); // Remove "Bearer " prefix
+			
 			try {
 				username = jwt.extractUsername(token);
-			}catch(Exception e) {
-				System.out.println("invalid JWT" + e.getMessage());
-			
+			} catch(Exception e) {
+				System.out.println("Invalid JWT: " + e.getMessage());
 			}
 		}
+		
+		// Authenticate if username is extracted and no existing authentication
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails user = context.getBean(CustomUserDetailService.class).loadUserByUsername(username);
+			
 			if(jwt.validateToken(token, user)) {
-				UsernamePasswordAuthenticationToken AuthToken 
-				= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-				AuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(AuthToken);
+				UsernamePasswordAuthenticationToken authToken 
+					= new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
-				
 		}
+		
 		filterChain.doFilter(request, response);	
-
 	}
 
 }
