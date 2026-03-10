@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "result")
+@Table(name = "result", schema = "public")
 @Data
 public class Result {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +29,12 @@ public class Result {
 	private int CRK;
 	private int civicEducation;
 	private int PHE;
+	private int handwriting;
+	private int rhymes;
+	private int verbalReasoning;
+	private int quantitative;
+	private int computer;
+	private int creativeArt;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "studentId", referencedColumnName="Id" ) 
 	private Student student;

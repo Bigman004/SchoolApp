@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name ="teacher")
+@Table(name ="teacher", schema = "public")
 @Data
 public class Teacher {
 	@jakarta.persistence.Id

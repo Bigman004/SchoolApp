@@ -1,5 +1,7 @@
 package com.example.SchoolApp.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.SchoolApp.dto.RegistrationDto;
+import com.example.SchoolApp.model.UserEntity;
 import com.example.SchoolApp.service.TeacherService;
 import com.example.SchoolApp.service.UserService;
 
@@ -51,25 +54,21 @@ public class AuthController {
 		return new ResponseEntity<RegistrationDto>(user, HttpStatus.OK);
 		
 	}
+	
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody RegistrationDto user, 
 			HttpServletResponse response) {
 		System.out.println(user);
 		String token = userService.verifyUser(user);
 		System.out.println(token);
-		ResponseCookie cookie = ResponseCookie.from("authToken", token)
-				.httpOnly(true)
-				.secure(true)
-				.secure(true)
-				.path("/")
-				.sameSite("None")
-				.domain("java-application-latest-ywhd.onrender.com")
-				.build();
-		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-		System.out.println(cookie.getValue());
 		return new ResponseEntity<>(token, HttpStatus.OK);
 	
 	}
+	 @GetMapping("/debug")
+	    public ResponseEntity<?> listUsers() {
+	        List<UserEntity> users = userService.listUser();
+	        return ResponseEntity.ok("Total users: " + users.size());
+	    }
 	
 	@Secured("TEACHER")
 	@PostMapping("/change_password")

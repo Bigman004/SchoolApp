@@ -21,6 +21,13 @@ public class ResultDto {
 	private Integer civicEducation;
 	@JsonProperty("phe")
 	private Integer PHE;
+	private Integer handwriting;
+	private Integer rhymes;
+	private Integer verbalReasoning;
+	private Integer quantitative;
+	private Integer computer;
+	private Integer creativeArt;
+
 	
 	private Long studentId;
 }

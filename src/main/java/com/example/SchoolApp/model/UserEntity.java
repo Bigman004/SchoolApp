@@ -14,12 +14,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Entity(name = "users")
+@Entity
+@Table(name ="users", schema = "public")
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +32,9 @@ public class UserEntity {
 	@JoinTable(
 			name = "user_roles",
 			joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-			inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")}
+			inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
+			schema = "public"
 			)
 	private Role role;
+	private boolean login;
 }

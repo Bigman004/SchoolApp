@@ -1,6 +1,7 @@
 package com.example.SchoolApp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -8,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import com.example.SchoolApp.dto.RegistrationDto;
 import com.example.SchoolApp.model.Role;
 import com.example.SchoolApp.model.UserEntity;
@@ -42,6 +44,7 @@ public class UserService {
 		user.setRegistrationNumber(registrationDto.getRegistrationNumber());
 		user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
 		user.setRole(role);
+		user.setLogin(false);
 		return userRepository.save(user);
 
 	}
@@ -50,6 +53,7 @@ public class UserService {
 		UserEntity user  =  new UserEntity();
 		user.setRegistrationNumber(registrationDto.getRegistrationNumber());
 		user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+		user.setLogin(false);
 		user.setRole(role);
 		return userRepository.save(user);
 	}
@@ -57,8 +61,12 @@ public class UserService {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getRegistrationNumber(), 
 						user.getPassword()));
-		if(authentication.isAuthenticated())
+		if(authentication.isAuthenticated()) {
+			UserEntity userEntity = userRepository.findByRegistrationNumber(user.getRegistrationNumber());
+			userEntity.setLogin(true);
+			userRepository.save(userEntity);
 			return tokenService.generateToken(user.getRegistrationNumber());
+		}
 		return "failure";
 		
 	}
@@ -83,6 +91,10 @@ public class UserService {
 		else
 			return false;
 		
+	}
+	public List<UserEntity> listUser() {
+		// TODO Auto-generated method stub
+		return userRepository.findAll();
 	}
 	
 }

@@ -37,6 +37,12 @@ public class ResultService {
 		result.setMath(resultDto.getMath());
 		result.setPHE(resultDto.getPHE());
 		result.setSocialStudies(resultDto.getSocialStudies());
+		result.setComputer(resultDto.getComputer());
+		result.setRhymes(resultDto.getRhymes());
+		result.setHandwriting(result.getHandwriting());
+		result.setQuantitative(resultDto.getQuantitative());
+		result.setVerbalReasoning(resultDto.getVerbalReasoning());
+		result.setCreativeArt(resultDto.getCreativeArt());
 		resultRepository.save(result);	
 		}
 	public Long getResultId(Long studentId, String term) {
@@ -72,6 +78,12 @@ public class ResultService {
 		resultDto.setSocialStudies(result.getSocialStudies());
 		resultDto.setTerm(result.getTerm());
 		resultDto.setStudentId(result.getStudent().getId());
+		resultDto.setComputer(result.getComputer());
+		resultDto.setRhymes(result.getRhymes());
+		resultDto.setHandwriting(result.getHandwriting());
+		resultDto.setQuantitative(result.getQuantitative());
+		resultDto.setVerbalReasoning(result.getVerbalReasoning());
+		resultDto.setCreativeArt(result.getCreativeArt());
 		return resultDto;
 	}
 	public List<ResultDto> getStudentResult(Long studentId){

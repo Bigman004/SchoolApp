@@ -47,9 +47,9 @@ public class SecurityConfig {
 				.csrf(customizer -> customizer.disable())
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("/login", "/create")
+						.requestMatchers("/login", "/create", "/debug")
 						.permitAll().anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults())
+				.httpBasic(customizer -> customizer.disable())
 				.sessionManagement(session ->
 					session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -62,7 +62,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(List.of("https://school-ui-eight.vercel.app"));
+		corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT","DELETE"));
 		corsConfiguration.setAllowCredentials(true);
 		corsConfiguration.addAllowedHeader("*");
