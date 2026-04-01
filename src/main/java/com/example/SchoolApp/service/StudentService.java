@@ -2,22 +2,18 @@ package com.example.SchoolApp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.example.SchoolApp.wrapper.ModelWrapper;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import com.example.SchoolApp.dto.ResultDto;
 import com.example.SchoolApp.dto.StudentDto;
 import com.example.SchoolApp.dto.RegistrationDto;
 import com.example.SchoolApp.model.Result;
 import com.example.SchoolApp.model.Student;
-import com.example.SchoolApp.model.UserEntity;
-import com.example.SchoolApp.repository.ResultRepository;
 import com.example.SchoolApp.repository.StudentRepository;
-import com.example.SchoolApp.repository.UserRepository;
 
 @Service
 public class StudentService {
@@ -38,16 +34,6 @@ public class StudentService {
 		RegistrationDto user = new RegistrationDto();
 		user.setPassword(defaultPassword);
 		studentRepo.save(std);
-		ArrayList<Result> results = new ArrayList<Result>();
-		Result result;
-		for(int i = 0; i< term.length; i++) {
-			result = new Result();
-			result.setTerm(term[i]);;
-			result.setStudent(std);
-			results.add(result);
-			std.getResults().add(result); 
-		}
-		std.setResults(results);
 		user.setRegistrationNumber(registrationPreffix+std.getId());
 		std.setUser(userService.saveStudent(user));
 		studentRepo.save(std);
@@ -63,7 +49,7 @@ public class StudentService {
 		String registrationPreffix = "22-22op/";
 		String defaultPassword = "std@2025";
 		RegistrationDto user = new RegistrationDto();
-		Student std = mapToStudent(student);
+		Student std = ModelWrapper.mapToStudent(student);
 		user.setPassword(defaultPassword);
 		
 		studentRepo.save(std);
@@ -87,35 +73,10 @@ public class StudentService {
 		List<Student> list = studentRepo.findAll(Sort.by("id"));
 		ArrayList<StudentDto> stdList = new ArrayList<>();
 		for(Student std:list) {
-			stdList.add(mapToStudentDto(std));
+			stdList.add(ModelWrapper.mapToStudentDto(std));
 		}
 		return stdList;
 		
-	}
-	private StudentDto mapToStudentDto(Student std) {
-		StudentDto student = StudentDto.builder()
-				.Id(std.getId())
-				.dateOfBirth(std.getDateOfBirth())
-				.firstName(std.getFirstName())
-				.LastName(std.getLastName())
-				.stateOfOrigin(std.getStateOfOrigin())
-				.parentPhone(std.getParentPhone())
-				.homeAddress(std.getHomeAddress())
-				.LGA(std.getLGA())
-				.build();
-		return student;			
-	}
-	private Student mapToStudent(StudentDto std) {
-		Student student = new Student();
-		student.setHomeAddress(std.getHomeAddress());
-		student.setFirstName(std.getFirstName());
-		student.setLastName(std.getLastName());
-		student.setLGA(std.getLGA());
-		student.setDateOfBirth(std.getDateOfBirth());
-		student.setParentPhone(std.getParentPhone());
-		student.setRegNumber(std.getRegNumber());
-		student.setStateOfOrigin(std.getStateOfOrigin());
-		return student;		
 	}
 	private String generateRegNo(long Id) {
 		String preffix = "221132"+ Long.toString(Id);

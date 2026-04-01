@@ -3,7 +3,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.SchoolApp.events.CreateResultEvent;
+import com.example.SchoolApp.wrapper.ModelWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.example.SchoolApp.dto.ResultDto;
@@ -11,6 +14,8 @@ import com.example.SchoolApp.model.Result;
 import com.example.SchoolApp.model.Student;
 import com.example.SchoolApp.repository.ResultRepository;
 import com.example.SchoolApp.repository.StudentRepository;
+
+import static io.swagger.v3.core.jackson.TypeNameResolver.std;
 
 @Service
 public class ResultService {
@@ -108,5 +113,22 @@ public class ResultService {
 			resultArrayList.set(min, temp);
 		}
 		return;
+	}
+
+	@EventListener
+	public void createResultEvent(CreateResultEvent event) {
+		String[] term = {"1st term", "2nd term", "3rd term"};
+		String[] types = {"term", "exam"};
+		ArrayList<Result> results = new ArrayList<Result>();
+		Result result;
+		for(String str: types) {
+			for (String s : term) {
+				result = new Result();
+				result.setTerm(s);
+				result.setStudent(ModelWrapper.mapToStudent(event.student()));
+				results.add(result);
+				result.setType(str);
+			}
+		}
 	}
 }
