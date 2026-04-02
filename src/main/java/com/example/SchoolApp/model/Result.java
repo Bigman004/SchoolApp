@@ -36,7 +36,6 @@ public class Result {
 	private int computer;
 	private int creativeArt;
 	private String type;
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "studentId", referencedColumnName="Id" ) 
-	private Student student;
+
+	private Long studentId;
 }

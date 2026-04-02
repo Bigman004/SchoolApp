@@ -27,6 +27,7 @@ public class ResultDto {
 	private Integer quantitative;
 	private Integer computer;
 	private Integer creativeArt;
+	private String type;
 
 	
 	private Long studentId;

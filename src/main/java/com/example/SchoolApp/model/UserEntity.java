@@ -26,6 +26,7 @@ public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
+	private long referenceID;  //
 	private String registrationNumber;
 	private String password;
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

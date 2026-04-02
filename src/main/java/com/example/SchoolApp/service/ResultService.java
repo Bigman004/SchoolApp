@@ -20,19 +20,14 @@ import static io.swagger.v3.core.jackson.TypeNameResolver.std;
 @Service
 public class ResultService {
 	private ResultRepository resultRepository;
-	private StudentRepository studentRepository;
+	;
 	
 	@Autowired
-	public ResultService(ResultRepository resultRepository, StudentRepository studentRepository){
+	public ResultService(ResultRepository resultRepository){
 		this.resultRepository = resultRepository;
-		this.studentRepository = studentRepository;
 	}
 	
-	public void saveResult(Result result, Long studentId) {
-		Student std = studentRepository.findById(studentId).get();
-		result.setStudent(std);
-		resultRepository.save(result);
-	}
+
 	public void updateResult(ResultDto resultDto, long resultId) {
 		Result result = resultRepository.findById(resultId).get();
 		result.setBasicScience(resultDto.getBasicScience());
@@ -50,20 +45,6 @@ public class ResultService {
 		result.setCreativeArt(resultDto.getCreativeArt());
 		resultRepository.save(result);	
 		}
-	public Long getResultId(Long studentId, String term) {
-		if(!(term.equals("1st term")||term.equals("2nd term")|| term.equals("3rd term"))) {
-			throw new IllegalArgumentException("you did not add a valid term");
-		}
-		Result result;
-		List<Result> list = studentRepository.
-				findById(studentId).get().getResults();
-		for(var i = 0; i < 3; i++) {
-			result = list.get(i);
-			if(result.getTerm().equals(term))
-				return result.getId();
-		}
-		return null;
-	}
 	public List<ResultDto> ResultByTerm(String term){
 		List<Result> list = resultRepository.findAllByTerm(term);
 		return list.stream()
@@ -82,21 +63,38 @@ public class ResultService {
 		resultDto.setPHE(result.getPHE());
 		resultDto.setSocialStudies(result.getSocialStudies());
 		resultDto.setTerm(result.getTerm());
-		resultDto.setStudentId(result.getStudent().getId());
+		resultDto.setStudentId(result.getStudentId());
 		resultDto.setComputer(result.getComputer());
 		resultDto.setRhymes(result.getRhymes());
 		resultDto.setHandwriting(result.getHandwriting());
 		resultDto.setQuantitative(result.getQuantitative());
 		resultDto.setVerbalReasoning(result.getVerbalReasoning());
 		resultDto.setCreativeArt(result.getCreativeArt());
+		resultDto.setType(result.getType());
 		return resultDto;
 	}
-	public List<ResultDto> getStudentResult(Long studentId){
-		List<Result> results = studentRepository.findById(studentId).get().getResults();
-		return results.stream().
-				map(result -> mapToResultDto(result))
-				.collect(Collectors.toList());
-		
+	public ResultDto getStudentResult(Long studentId, String term, String type) {
+		return mapToResultDto(
+				resultRepository.findByStudentIdAndTermAndType(
+						studentId, term, type
+				)
+		);
+	}
+	/***
+	 * the method return a student id for the result controller class
+	 * @param studentId
+	 * @param term
+	 * @param type
+	 * @return
+	 */
+	public long getResultId(Long studentId, String term, String type) {
+		List<Result> list =  resultRepository.findAllByTermAndType(term, type);
+		for(Result result : list){
+			if(result.getStudentId().equals(studentId)){
+				return result.getId();
+			}
+		}
+		return -1;
 	}
 	public void selectionSort(ArrayList<ResultDto> resultArrayList) {
 		ResultDto temp;
@@ -114,21 +112,25 @@ public class ResultService {
 		}
 		return;
 	}
-
+	public List<ResultDto> getResultsByTermAndType(String term, String type) {
+		return resultRepository.findAllByTermAndType(term, type).stream()
+				.map(result -> mapToResultDto(result))
+				.collect(Collectors.toList());
+	}
 	@EventListener
 	public void createResultEvent(CreateResultEvent event) {
 		String[] term = {"1st term", "2nd term", "3rd term"};
-		String[] types = {"term", "exam"};
-		ArrayList<Result> results = new ArrayList<Result>();
+		String[] types = {"test", "exam"};
 		Result result;
 		for(String str: types) {
 			for (String s : term) {
 				result = new Result();
 				result.setTerm(s);
-				result.setStudent(ModelWrapper.mapToStudent(event.student()));
-				results.add(result);
+				result.setStudentId(event.studentID());
 				result.setType(str);
+				resultRepository.save(result);
 			}
 		}
+		return;
 	}
 }

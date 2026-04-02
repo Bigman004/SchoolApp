@@ -1,7 +1,9 @@
 package com.example.SchoolApp.service;
 
+import com.example.SchoolApp.events.CreateUserEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,14 +40,28 @@ public class UserService {
 		this.authenticationManager = authenticationManager; 
 		this.tokenService = tokenService;
 	}
-	public UserEntity saveStudent(RegistrationDto registrationDto) {
-		Role role = roleRepository.findByName("STUDENT");
-		UserEntity user = new UserEntity();
-		user.setRegistrationNumber(registrationDto.getRegistrationNumber());
-		user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-		user.setRole(role);
-		user.setLogin(false);
-		return userRepository.save(user);
+	@EventListener
+	public void saveUser(CreateUserEvent event) {
+
+		Role role = roleRepository.findByName(event.role());
+		if(role.getName().equals("STUDENT")) {
+			String StudentRegNoPreffixes = "std/iko/";
+			UserEntity user = new UserEntity();
+			user.setRegistrationNumber("std/iko/"+ event.referenceId());
+			user.setPassword(passwordEncoder.encode(event.password()));
+			user.setRole(role);
+			user.setLogin(false);
+			userRepository.save(user);
+		}
+		if(role.getName().equals("TEACHER")) {
+			String StudentRegNoPreffixes = "teacher-22-22-2";
+			UserEntity user = new UserEntity();
+			user.setRegistrationNumber("teacher-22-22-2");
+			user.setPassword(passwordEncoder.encode(event.password()));
+			user.setRole(role);
+			user.setLogin(false);
+			userRepository.save(user);
+		}
 
 	}
 	public UserEntity saveTeacher(RegistrationDto registrationDto) {

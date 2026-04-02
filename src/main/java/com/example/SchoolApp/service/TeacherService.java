@@ -31,6 +31,6 @@ public class TeacherService {
 		
 	}
 	public Teacher getTeacher() {
-		return teacherRepo.findById((long) 3).get();
+		return teacherRepo.findById((long) 1).get();
 	}
 }

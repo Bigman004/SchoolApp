@@ -2,10 +2,11 @@ package com.example.SchoolApp.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.example.SchoolApp.wrapper.ModelWrapper;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import com.example.SchoolApp.events.CreateResultEvent;
+import com.example.SchoolApp.events.CreateUserEvent;
+import com.example.SchoolApp.wrapper.ModelWrapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,24 +20,22 @@ import com.example.SchoolApp.repository.StudentRepository;
 public class StudentService {
 	private StudentRepository studentRepo;
 	private UserService userService;
+	private ApplicationEventPublisher publisher;
 	
 	@Autowired
 	public StudentService(StudentRepository studentRepo,
-			UserService userService) {
+			  ApplicationEventPublisher publisher) {
 		this.studentRepo = studentRepo;
-		this.userService = userService;
+		this.publisher = publisher;
 	}
 	//this will also save a user to the userRepository
 	public void addStudent(Student std) {
-		String[] term = {"1st term", "2nd term", "3rd term"};
-		String registrationPreffix = "22-22op/";
 		String defaultPassword = "std@2025";
 		RegistrationDto user = new RegistrationDto();
 		user.setPassword(defaultPassword);
 		studentRepo.save(std);
-		user.setRegistrationNumber(registrationPreffix+std.getId());
-		std.setUser(userService.saveStudent(user));
-		studentRepo.save(std);
+		publisher.publishEvent(new CreateResultEvent(std.getId()));
+		publisher.publishEvent(new CreateUserEvent(std.getId(), "STUDENT", defaultPassword));
 		return;
 	}
 	/**
@@ -45,30 +44,15 @@ public class StudentService {
 	 * create a student with the default password
 	 */
 	public void addStudent(StudentDto student) {
-		String[] term = {"1st term", "2nd term", "3rd term"};
 		String registrationPreffix = "22-22op/";
 		String defaultPassword = "std@2025";
-		RegistrationDto user = new RegistrationDto();
 		Student std = ModelWrapper.mapToStudent(student);
-		user.setPassword(defaultPassword);
-		
 		studentRepo.save(std);
-		ArrayList<Result> results = new ArrayList<Result>();
-		Result result;
-		for(int i = 0; i< term.length; i++) {
-			result = new Result();
-			result.setTerm(term[i]);;
-			result.setStudent(std);
-			results.add(result);
-			std.getResults().add(result); 
-		}
-		std.setResults(results);
-		user.setRegistrationNumber(registrationPreffix+std.getId());
-		std.setUser(userService.saveStudent(user));
-		studentRepo.save(std);
-		return;
+		publisher.publishEvent(new CreateResultEvent(std.getId()));
+		publisher.publishEvent(new CreateUserEvent(std.getId(), "STUDENT", defaultPassword));
 
-			}
+		return;
+	}
 	public ArrayList<StudentDto> StudentList(){
 		List<Student> list = studentRepo.findAll(Sort.by("id"));
 		ArrayList<StudentDto> stdList = new ArrayList<>();

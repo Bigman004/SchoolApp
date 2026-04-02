@@ -34,10 +34,6 @@ public class Student {
 	@NotEmpty(message="state or origin should not be empty")
 	private String stateOfOrigin;
 	private String LGA;
-	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Result> results = new ArrayList<>();
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "userId", referencedColumnName="Id" )
-	private UserEntity user;
+	private Long userId;
 	
 }

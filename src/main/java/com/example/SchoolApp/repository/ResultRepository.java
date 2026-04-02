@@ -10,5 +10,7 @@ import com.example.SchoolApp.model.Result;
 public interface ResultRepository extends JpaRepository<Result, Long> {
 
 	List<Result> findAllByTerm(String term);
+	List<Result> findAllByTermAndType(String term, String type);
+	Result  findByStudentIdAndTermAndType(Long studentId, String term, String type);
 	
 }

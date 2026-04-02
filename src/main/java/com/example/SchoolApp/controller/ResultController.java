@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.SchoolApp.dto.PrintResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,35 +40,55 @@ public class ResultController {
 		this.studentService = studentService;
 	}
 	
-	@GetMapping("/{studentId}")
-	public ResponseEntity<?> studentResult(@PathVariable long studentId, Model model) {
-		List<ResultDto> results = resultService.getStudentResult(studentId);
-		return new ResponseEntity<>(results, HttpStatus.OK);
+//	@GetMapping("/{studentId}")
+//	public ResponseEntity<?> studentResult(@PathVariable long studentId, Model model) {
+//		List<ResultDto> results = resultService.getStudentResult(studentId);
+//		return new ResponseEntity<>(results, HttpStatus.OK);
+//	}
+	@GetMapping("{info}")
+	public ResponseEntity<?> getResults(@PathVariable String info) {
+		String[] str = info.split("-");
+		ResultDto result = resultService.getStudentResult(Long.parseLong(str[0]), str[1], str[2]);
+		return ResponseEntity.ok(result);
 	}
-	@PostMapping("{studentId}/{term}")
-	public String uploadResult(@PathVariable String term, @PathVariable Long studentId,
+	@PostMapping("{info}")
+	public String uploadResult(@PathVariable String info,
 			@RequestBody ResultDto result) {
 		System.out.println(result);
-		Long Id = resultService.getResultId(studentId, term);
+		String[] str = info.split("-");
+		long Id = resultService.getResultId(Long.parseLong(str[0]), str[1], str[2]);
 		resultService.updateResult(result, Id);
 		return "teacherPage";
-	}	
+	}
+	@GetMapping("{studentId}/{term}")
+	public ResponseEntity<?> getStudentResult(@PathVariable String term,
+											  @PathVariable Long studentId) {
+		ResultDto test = resultService.getStudentResult(studentId, term, "test");
+		ResultDto exam = resultService.getStudentResult(studentId, term, "exam");
+		return new ResponseEntity<>(PrintResultDto.builder()
+				.examResult(exam)
+				.testResult(test)
+				.studentFirstName(studentService.getStudentDtoById(studentId).getFirstName())
+				.studentLastName(studentService.getStudentDtoById(studentId).getLastName())
+				.build(),
+				HttpStatus.OK);
+	}
 	@GetMapping("/")
 	public ResponseEntity<?> resultPageApi() {
 		String[] terms = {"1st term", "2nd term", "3rd term"};
-		ArrayList<ResultDto> results;
-		List<List<StdResultDetails>> detailList = new ArrayList<>();
-		ArrayList<StdResultDetails> list;
-		for(String term: terms) {
-			results = (ArrayList<ResultDto>) resultService.ResultByTerm(term);
-			resultService.selectionSort(results);
-			list = new ArrayList<StdResultDetails>();
-			for(ResultDto result: results) {
-				StdResultDetails resultDetails = new StdResultDetails(result);
-				list.add(resultDetails);
+		String[] types = {"exam", "test"};
+		List<List<StdResultDetails>> detailList = new ArrayList<List<StdResultDetails>>();
+		for (String term : terms) {
+			for (String type : types) {
+				detailList.add(resultService.
+						getResultsByTermAndType(term, type)
+						.stream().map(result -> new StdResultDetails(result))
+						.collect(Collectors.toList())
+				);
 			}
-			detailList.add(list);
 		}
+
+
 		return new ResponseEntity<>(detailList, HttpStatus.OK);
 	}
 	
@@ -84,6 +106,7 @@ public class ResultController {
 			this.setPHE(result.getPHE());
 			this.setSocialStudies(result.getSocialStudies());
 			this.setStudentId(result.getStudentId());
+			this.setType(result.getType());
 			this.firstName = studentService.getStudentDtoById(result.getStudentId()).getFirstName();
 			this.lastName = studentService.getStudentDtoById(result.getStudentId()).getLastName();
 		}
