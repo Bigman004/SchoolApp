@@ -4,32 +4,27 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.SchoolApp.security.SecurityUtill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.SchoolApp.dto.AttendanceDto;
 import com.example.SchoolApp.dto.DateTransferDto;
 import com.example.SchoolApp.dto.StudentDto;
-import com.example.SchoolApp.model.Attendance;
-import com.example.SchoolApp.model.Student;
 import com.example.SchoolApp.model.Teacher;
 import com.example.SchoolApp.service.AttendanceService;
 import com.example.SchoolApp.service.StudentService;
 import com.example.SchoolApp.service.TeacherService;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 
 
@@ -51,14 +46,19 @@ public class StudentController {
 	@GetMapping("/")
 	@Secured("TEACHER")
 	public ResponseEntity<?> teacherPage() {
-		ArrayList<StudentDto> studentList = studentService.StudentList();
-		
-		return new ResponseEntity<>(new WrapperRequest(studentList, teacherService.getTeacher()), HttpStatus.OK);
+		String username = SecurityUtill.getSessionLoader();
+		String studentClass = teacherService.getTeacher(username).getTeacherClass();
+		ArrayList<StudentDto> studentList = studentService.StudentList(studentClass);
+		String registrationNumber = SecurityUtill.getSessionLoader();
+		return new ResponseEntity<>(new WrapperRequest(studentList,
+				teacherService.getTeacher(registrationNumber)), HttpStatus.OK);
 	}
 	@GetMapping("/teacherInfo")
 	@Secured("TEACHER")
 	public ResponseEntity<?> teacherDetails(){
-		return new ResponseEntity<>(teacherService.getTeacher(), HttpStatus.OK);
+		String registrationNumber = SecurityUtill.getSessionLoader();
+		return new ResponseEntity<>(teacherService.getTeacher(registrationNumber),
+				HttpStatus.OK);
 	}
 	@Secured("TEACHER")
 	@GetMapping("/add_student")
@@ -70,9 +70,12 @@ public class StudentController {
 	@PostMapping("/add_student")
 	public ResponseEntity<?> addNewStudent(@Valid @RequestBody StudentDto student,
 			BindingResult result) {
+		String registrationNumber = SecurityUtill.getSessionLoader();
 		if(result.hasErrors()) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+		Teacher teacher = teacherService.getTeacher(registrationNumber);
+		student.setClassOfStudent(teacher.getTeacherClass());
 		studentService.addStudent(student);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
@@ -82,9 +85,8 @@ public class StudentController {
 	}
 	@Secured("TEACHER")
 	@GetMapping("/edit/{studentId}")
-	public ResponseEntity<?> editStudent(@PathVariable("studentId") Long Id, Model model ) {
+	public ResponseEntity<?> editStudent(@PathVariable("studentId") Long Id) {
 		StudentDto student = studentService.getStudentDtoById(Id);
-		model.addAttribute("student", student);
 		return new ResponseEntity<>(student, HttpStatus.OK);
 	}
 	@Secured("TEACHER")

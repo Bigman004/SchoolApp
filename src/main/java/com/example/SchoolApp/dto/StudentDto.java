@@ -20,4 +20,5 @@ public class StudentDto {
 	@NotEmpty(message="state or origin should not be empty")
 	private String stateOfOrigin;
 	private String LGA;
+	private String classOfStudent;
 }

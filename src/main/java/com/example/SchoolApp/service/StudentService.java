@@ -19,7 +19,6 @@ import com.example.SchoolApp.repository.StudentRepository;
 @Service
 public class StudentService {
 	private StudentRepository studentRepo;
-	private UserService userService;
 	private ApplicationEventPublisher publisher;
 	
 	@Autowired
@@ -31,11 +30,13 @@ public class StudentService {
 	//this will also save a user to the userRepository
 	public void addStudent(Student std) {
 		String defaultPassword = "std@2025";
-		RegistrationDto user = new RegistrationDto();
-		user.setPassword(defaultPassword);
-		studentRepo.save(std);
+		String registrationPreffix = "22-22op/";
+		studentRepo.save(std);  // to generate ID
 		publisher.publishEvent(new CreateResultEvent(std.getId()));
-		publisher.publishEvent(new CreateUserEvent(std.getId(), "STUDENT", defaultPassword));
+		publisher.publishEvent(new CreateUserEvent(std.getId(), registrationPreffix+ std.getId(),
+				"STUDENT", defaultPassword));
+		std.setRegNumber(registrationPreffix+ std.getId());
+		studentRepo.save(std);
 		return;
 	}
 	/**
@@ -47,14 +48,16 @@ public class StudentService {
 		String registrationPreffix = "22-22op/";
 		String defaultPassword = "std@2025";
 		Student std = ModelWrapper.mapToStudent(student);
-		studentRepo.save(std);
+		studentRepo.save(std);    //to generate Id
 		publisher.publishEvent(new CreateResultEvent(std.getId()));
-		publisher.publishEvent(new CreateUserEvent(std.getId(), "STUDENT", defaultPassword));
-
+		publisher.publishEvent(new CreateUserEvent(std.getId(), registrationPreffix+ std.getId(),
+				"STUDENT", defaultPassword));
+		std.setRegNumber(registrationPreffix+ std.getId());
+		studentRepo.save(std);
 		return;
 	}
-	public ArrayList<StudentDto> StudentList(){
-		List<Student> list = studentRepo.findAll(Sort.by("id"));
+	public ArrayList<StudentDto> StudentList(String classOfStudent) {
+		List<Student> list = studentRepo.findByClassOfStudent(classOfStudent);
 		ArrayList<StudentDto> stdList = new ArrayList<>();
 		for(Student std:list) {
 			stdList.add(ModelWrapper.mapToStudentDto(std));

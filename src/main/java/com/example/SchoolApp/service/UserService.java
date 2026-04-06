@@ -45,18 +45,16 @@ public class UserService {
 
 		Role role = roleRepository.findByName(event.role());
 		if(role.getName().equals("STUDENT")) {
-			String StudentRegNoPreffixes = "std/iko/";
 			UserEntity user = new UserEntity();
-			user.setRegistrationNumber("std/iko/"+ event.referenceId());
+			user.setRegistrationNumber(event.username());
 			user.setPassword(passwordEncoder.encode(event.password()));
 			user.setRole(role);
 			user.setLogin(false);
 			userRepository.save(user);
 		}
 		if(role.getName().equals("TEACHER")) {
-			String StudentRegNoPreffixes = "teacher-22-22-2";
 			UserEntity user = new UserEntity();
-			user.setRegistrationNumber("teacher-22-22-2");
+			user.setRegistrationNumber(event.username());
 			user.setPassword(passwordEncoder.encode(event.password()));
 			user.setRole(role);
 			user.setLogin(false);
@@ -64,15 +62,7 @@ public class UserService {
 		}
 
 	}
-	public UserEntity saveTeacher(RegistrationDto registrationDto) {
-		Role role = roleRepository.findByName("TEACHER");
-		UserEntity user  =  new UserEntity();
-		user.setRegistrationNumber(registrationDto.getRegistrationNumber());
-		user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-		user.setLogin(false);
-		user.setRole(role);
-		return userRepository.save(user);
-	}
+
 	public String verifyUser(RegistrationDto user) {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getRegistrationNumber(), 

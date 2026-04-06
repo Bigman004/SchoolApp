@@ -2,6 +2,7 @@ package com.example.SchoolApp.controller;
 
 import java.util.ArrayList;
 
+import com.example.SchoolApp.security.SecurityUtill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,9 @@ public class TeacherRestController {
 	}
 	@GetMapping("/view")
 	public ResponseEntity<ArrayList<StudentDto>> teacherView(){
-		ArrayList<StudentDto> studentList = studentService.StudentList();
+		String username = SecurityUtill.getSessionLoader();
+		String studentClass = teacherService.getTeacher(username).getTeacherClass();
+		ArrayList<StudentDto> studentList = studentService.StudentList(studentClass);
 		return new ResponseEntity<ArrayList<StudentDto>>(studentList, HttpStatus.OK);
 	}
 	@PostMapping("/")
@@ -38,6 +41,7 @@ public class TeacherRestController {
 	}
 	@GetMapping("/teacher")
 	public ResponseEntity<?> teacherResponse(){
-		return new ResponseEntity<>(teacherService.getTeacher(), HttpStatus.OK);
+		String registrationNumber = SecurityUtill.getSessionLoader();
+		return new ResponseEntity<>(teacherService.getTeacher(registrationNumber), HttpStatus.OK);
 	}
 }
