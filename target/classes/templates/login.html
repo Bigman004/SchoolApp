@@ -1,0 +1,75 @@
+		
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmyelead.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<style>
+		button {
+		  width: 30%;
+		  margin: auto;
+		  padding: 2%;
+		  margin-top: 1.5em;
+		  border: none;
+		  border-radius: 7px;
+		  background-color: #0077ffee;
+		  color: white;
+		  font-size: 14px;
+		}
+		.login-form {
+		  margin: auto;
+		  background-color: #1310c949;
+		  max-width: 40%;
+		  border-radius: 3em;
+		  padding: 5%;
+		  display: flex;
+		  flex-direction: column;
+		  gap: 0.5em;
+		}
+		.input {
+		  display: flex;
+		  align-items: center;
+		  height: 80px;
+		  background: #eaeaea;
+		  border-radius: 6px;
+		}
+		.input input {
+		  height: 50px;
+		  width: 80%;
+		  background: transparent;
+		  border: none;
+		  outline: none;
+		  color: #797979;
+		  font-size: 19px;
+		}
+	</style>
+	</head>
+	<body>
+		
+		<form th:action ="@{/loginHTML}" method="post" class="login-form">
+           <div class="email-input input">
+             <img src="" alt="" />
+             <input
+               type="text"
+               className="email-address"
+               id="username"
+               placeholder="enter reg No"
+			   name="username"
+             />
+           </div>
+           <div class="password-input input">
+             <img src=""/>
+             <input
+               type="password"
+               name="password"
+               id="password"
+               placeholder="password"
+             />
+           </div>
+           <div class="action-section">
+             <button value="Log in" type="submit">Login</button> or <a>forgot password</a>
+           </div>
+         </form>
+		 
+		</body>
+	</html>
