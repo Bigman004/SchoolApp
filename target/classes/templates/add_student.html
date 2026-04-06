@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmyelead.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+
+		form {
+				  margin: auto;
+				  background-color: #1310c949;
+				  max-width: 50%;
+				  border-radius: 3em;
+				  padding: 5%;
+				  display: grid;
+				  grid-template-columns: 1fr 1fr;
+				  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+				  grid-template-areas:
+				    "first-name-input last-name-input"
+				    "date-of-birth-input tel-input"
+				    "email-input email-input"
+				    "password-input confirm-password-input"
+				    "form-bottom form-bottom";
+				  gap: 1em;
+				}
+
+				.first-name-input {
+				  grid-area: first-name-input;
+				}
+				.last-name-input {
+				  grid-area: last-name-input;
+				}
+				.email-input {
+				  grid-area: email-input;
+				}
+				.password-input {
+				  grid-area: password-input;
+				}
+				.confirm-password-input {
+				  grid-area: confirm-password-input;
+				}
+				.form-bottom {
+				  grid-area: form-bottom;
+				  display: flex;
+				  flex-direction: column;
+				  gap: 1em;
+				}
+				.input img {
+				  margin: 0px 30px;
+				}
+				.input {
+				  display: flex;
+				  align-items: center;
+				  height: 80px;
+				  background: #eaeaea;
+				  border-radius: 6px;
+				}
+				.input input {
+				  height: 50px;
+				  width: 80%;
+				  background: transparent;
+				  border: none;
+				  outline: none;
+				  color: #797979;
+				  font-size: 19px;
+				}
+				.button-section {
+				  display: flex;
+				  flex-wrap: nowrap;
+				}
+				button {
+				  width: 30%;
+				  margin: auto;
+				  padding: 2%;
+				  margin-top: 1.5em;
+				  border: none;
+				  border-radius: 7px;
+				  background-color: #0077ffee;
+				  color: white;
+				  font-size: 14px;
+				}
+
+	</style>
+  </head>
+  <body>
+    <h4>Add new student</h4>
+    <form method ="post" th:object="${student}">
+      <div class="first-name-input input">
+        <img src="" alt="" />
+        <input
+		  name="firstName"
+          type="text"
+          className="first-name"
+          id="first-name"
+          placeholder="First name"
+		  th:field ="*{firstName}"
+        />
+		<p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+      </div>
+      <div class="last-name-input input">
+        <img src="" alt="" />
+        <input
+		  name="lastName"
+          type="text"
+          className="last-name"
+          id="last-name"
+          placeholder="Last name"
+		  th:field ="*{lastName}"
+        />
+		<p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+      </div>
+      <div class="email-input input">
+        <img src="" alt="" />
+        <input
+		  name ="homeAddress"
+          type="text"
+          className="email-address"
+          id="address"
+          placeholder="enter home address"
+		  th:field ="*{homeAddress}"
+        />
+      </div>
+      <div class="date-of-birth-input input">
+        <input
+		  name ="dateOfBirth"
+          type="date"
+          className="date of birth"
+          id="date-of-birth"
+		  th:field ="*{dateOfBirth}"
+        />
+		<p th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></p>
+      </div>
+      <div class="tel-input input">
+        <img src="" alt="" srcset="" />
+        <input
+		  name ="parentPhone"
+          type="tel"
+          className="tel-number"
+          id="tel-number"
+          placeholder="parent phone"
+		  th:field ="*{parentPhone}"
+        />
+		<p th:if="${#fields.hasErrors('parentPhone')}" th:errors="*{parentPhone}"></p>
+      </div>
+      <div class="password-input input">
+        <img src="" alt="" />
+        <input
+          type="text"
+          name="stateOfOrigin"
+          id="password"
+          placeholder="state of origin"
+		  th:field ="*{stateOfOrigin}"
+        />
+		<p th:if="${#fields.hasErrors('stateOfOrigin')}" th:errors="*{stateOfOrigin}"></p>
+      </div>
+      <div class="confirm-password-input input">
+        <img src="" alt="" />
+        <input
+          type="text"
+          name="confirm-password"
+          id="confirm-password"
+          placeholder="LGA"
+		  th:field ="${student.LGA}"
+        />
+      </div>
+      <div class="form-bottom">
+        <button class="sign-up" type="submit">Add</button>
+      </div>
+    </form>
+  </body>
+</html>
