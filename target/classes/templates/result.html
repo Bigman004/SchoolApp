@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <body lang="en" xmlns:th="http://thmyelead.org">
   <head>
@@ -190,4 +191,198 @@
 		</form>
 
 	</body>
+=======
+<!DOCTYPE html>
+<body lang="en" xmlns:th="http://thmyelead.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	</head>
+	<body>
+	<form method="post" th:object ="${result1}" th:action="@{result/{resultId}(resultId=${result1.Id})}">
+	  <div class = term th:text="*{term}"></div>
+      <div class="first-name-input input">
+        <input
+		  name="result.math"
+          type ="number"
+          id="math-score"
+          placeholder="math score"
+		  th:field ="${result1.math}"
+        />
+      </div>
+      <div class="last-name-input input">
+        <input
+		  name="result1.english"
+          type="number"
+          id="english-score"
+          placeholder="english score"
+		  th:field ="${result1.english}"
+        />
+      </div>
+      <div class="email-input input">
+        <input
+		  name ="social-studies-score"
+          type="number"
+          placeholder="social studies score"
+		  th:field ="*{socialStudies}"
+        />
+      </div>
+      <div class="date-of-birth-input input">
+        <input
+		  name ="basic-science-score"
+          type="number"
+		  th:field ="*{basicScience}"
+		  placeholder="basic science score"
+        />
+      </div>
+      <div class="tel-input input">
+        <input
+		  name ="CRK-score"
+          type="number"
+          placeholder="CRK score"
+		  th:field ="*{CRK}"
+        />
+		</div>
+      <div class="password-input input">
+        <input
+          type="number"
+          name="civic-education-score"
+          placeholder="civiv education score"
+		  th:field ="*{civicEducation}"
+        />
+      </div>
+      <div class="confirm-password-input input">
+        <input
+          type="number"
+          name="PHE-score"
+          placeholder="PHE score"
+		  th:field ="${result1.PHE}"
+        />
+      </div>
+      <div class="form-bottom">
+        <button type="submit">upload student scores</button>
+      </div>
+	</form>
+	<form method="post" th:object ="${result2}" th:action="@{/}">
+		  <div class = term th:text="*{term}"></div>
+	      <div class="last-name-input input">
+	        <input
+			  name="result2.english"
+	          type="number"
+	          id="english-score"
+	          placeholder="english score"
+			  th:field ="${result2.english}"
+	        />
+	      </div>
+	      <div class="email-input input">
+	        <input
+			  name ="social-studies-score"
+	          type="number"
+	          placeholder="social studies score"
+			  th:field ="*{socialStudies}"
+	        />
+	      </div>
+	      <div class="date-of-birth-input input">
+	        <input
+			  name ="basic-science-score"
+	          type="number"
+			  th:field ="*{basicScience}"
+			  placeholder="basic science score"
+	        />
+	      </div>
+	      <div class="tel-input input">
+	        <input
+			  name ="CRK-score"
+	          type="number"
+	          placeholder="CRK score"
+			  th:field ="*{CRK}"
+	        />
+			</div>
+	      <div class="password-input input">
+	        <input
+	          type="number"
+	          name="civic-education-score"
+	          placeholder="civiv education score"
+			  th:field ="*{civicEducation}"
+	        />
+	      </div>
+	      <div class="confirm-password-input input">
+	        <input
+	          type="number"
+	          name="PHE-score"
+	          placeholder="PHE score"
+			  th:field ="${result2.PHE}"
+	        />
+	      </div>
+	      <div class="form-bottom">
+	        <button type="submit" th:formaction="@{result/{resultId}(resultId=${result2.Id})}">upload student scores</button>
+	      </div>
+		</form>
+		<form method="post" th:object ="${result3}" th:action="@{result/{resultId}(resultId=${result3.Id})}">
+		  <div class = term th:text="*{term}"></div>
+		  <div class="first-name-input input">
+		    <input
+			  name="result.math"
+		      type ="number"
+		      id="math-score"
+		      placeholder="math score"
+			  th:field ="${result3.math}"
+		    />
+		  </div>
+		  <div class="last-name-input input">
+		    <input
+			  name="result1.english"
+		      type="number"
+		      id="english-score"
+		      placeholder="english score"
+			  th:field ="${result3.english}"
+		    />
+		  </div>
+		  <div class="email-input input">
+		    <input
+			  name ="social-studies-score"
+		      type="number"
+		      placeholder="social studies score"
+			  th:field ="*{socialStudies}"
+		    />
+		  </div>
+		  <div class="date-of-birth-input input">
+		    <input
+			  name ="basic-science-score"
+		      type="number"
+			  th:field ="*{basicScience}"
+			  placeholder="basic science score"
+		    />
+		  </div>
+		  <div class="tel-input input">
+		    <input
+			  name ="CRK-score"
+		      type="number"
+		      placeholder="CRK score"
+			  th:field ="*{CRK}"
+		    />
+			</div>
+		  <div class="password-input input">
+		    <input
+		      type="number"
+		      name="civic-education-score"
+		      placeholder="civiv education score"
+			  th:field ="*{civicEducation}"
+		    />
+		  </div>
+		  <div class="confirm-password-input input">
+		    <input
+		      type="number"
+		      name="PHE-score"
+		      placeholder="PHE score"
+			  th:field ="${result1.PHE}"
+		    />
+		  </div>
+		  <div class="form-bottom">
+		    <button type="submit">upload student scores</button>
+		  </div>
+		</form>
+
+	</body>
+>>>>>>> 10b1763cfe6c8830f676d55680d0f9367fa3a19f
 	</html>
