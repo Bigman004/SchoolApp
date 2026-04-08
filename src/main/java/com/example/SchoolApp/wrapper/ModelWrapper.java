@@ -42,4 +42,13 @@ public class ModelWrapper {
                 .username(teacher.getUsername())
                 .build();
     }
+    static public TeacherDto mapToTeacherDto(Teacher teacher) {
+        return TeacherDto.builder()
+                .teacherEmail(teacher.getEmail())
+                .name(teacher.getName())
+                .teacherClass(teacher.getTeacherClass())
+                .username(teacher.getUsername())
+                .Id(teacher.getId())
+                .build();
+    }
 }

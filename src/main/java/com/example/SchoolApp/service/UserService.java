@@ -44,6 +44,7 @@ public class UserService {
 	public void saveUser(CreateUserEvent event) {
 
 		Role role = roleRepository.findByName(event.role());
+		System.out.println(role);
 		if(role.getName().equals("STUDENT")) {
 			UserEntity user = new UserEntity();
 			user.setRegistrationNumber(event.username());
@@ -52,7 +53,15 @@ public class UserService {
 			user.setLogin(false);
 			userRepository.save(user);
 		}
-		if(role.getName().equals("TEACHER")) {
+		else if(role.getName().equals("TEACHER")) {
+			UserEntity user = new UserEntity();
+			user.setRegistrationNumber(event.username());
+			user.setPassword(passwordEncoder.encode(event.password()));
+			user.setRole(role);
+			user.setLogin(false);
+			userRepository.save(user);
+		}
+		else  if(role.getName().equals("ADMIN")) {
 			UserEntity user = new UserEntity();
 			user.setRegistrationNumber(event.username());
 			user.setPassword(passwordEncoder.encode(event.password()));
@@ -102,5 +111,11 @@ public class UserService {
 		// TODO Auto-generated method stub
 		return userRepository.findAll();
 	}
-	
+
+	public String getUserRole(String username) {
+
+		return userRepository.
+				findByRegistrationNumber(username).getRole().
+				getName();
+	}
 }

@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.example.SchoolApp.dto.TeacherDto;
 import com.example.SchoolApp.model.Teacher;
+import com.example.SchoolApp.security.SecurityUtill;
+import com.example.SchoolApp.service.JWTService;
+import com.example.SchoolApp.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,25 +29,30 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthController {
 	private UserService userService;
 	private TeacherService teacherService;
+    private OwnerService ownerService;
+	private JWTService jwtService;
 	
 	@Autowired
-	public AuthController(UserService userService, TeacherService teacherService) {
+	public AuthController(UserService userService,
+						  TeacherService teacherService, JWTService jwtService
+    ,					 OwnerService ownerService) {
 		this.userService = userService;
 		this.teacherService = teacherService;
+        this.ownerService = ownerService;
+		this.jwtService = jwtService;
 	}
-	
+    @PostMapping("/create")
+    public String beginApp() {
+        ownerService.startApplication();
+        return "application started";
+    }
 	@GetMapping("/register")
 	public String registerFrom(Model model) {
 		RegistrationDto registrationDto = new RegistrationDto();
 		model.addAttribute("user", registrationDto);
 		return "login";
 	}
-	
-	@PostMapping("/create")
-	public String createTeacher(@RequestBody TeacherDto teacher) {
-		teacherService.addTeacher(teacher);
-		return "teacherPage";
-	}
+
 	@GetMapping("login")
 	public ResponseEntity<RegistrationDto> loginApi() {
 		RegistrationDto user = new RegistrationDto();
@@ -57,8 +65,11 @@ public class AuthController {
 			HttpServletResponse response) {
 		System.out.println(user);
 		String token = userService.verifyUser(user);
-		System.out.println(token);
-		return new ResponseEntity<>(token, HttpStatus.OK);
+		String username = jwtService.extractUsername(token);
+		return new ResponseEntity<>(
+				new LoginResponseWrapper(token,
+				userService.getUserRole(username)),
+				HttpStatus.OK);
 	
 	}
 	 @GetMapping("/debug")
@@ -74,5 +85,20 @@ public class AuthController {
 		System.out.println(password +" "+ user );
 		System.out.println(userService.changePassword(password, user));
 		return new ResponseEntity<String>("change password success", HttpStatus.OK);
+	}
+	class LoginResponseWrapper {
+		String token;
+		String message;
+		public LoginResponseWrapper(String token, String message) {
+			this.token = token;
+			this.message = message;
+		}
+		public String getToken() {
+			return token;
+		}
+		public String getMessage() {
+			return message;
+		}
+
 	}
 }

@@ -21,4 +21,5 @@ public class StudentDto {
 	private String stateOfOrigin;
 	private String LGA;
 	private String classOfStudent;
+	private String parentEmail;
 }

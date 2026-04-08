@@ -95,7 +95,9 @@ public class StudentService {
 				.build();
 
 	}
-	
-	
 
+
+	public int getclassSize(String classOfStudent) {
+		return  studentRepo.findByClassOfStudent(classOfStudent).size();
+	}
 }

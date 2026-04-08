@@ -36,5 +36,6 @@ public class Student {
 	private String LGA;
 	private Long userId;
 	private String classOfStudent;
+	private String parentEmail;
 	
 }
