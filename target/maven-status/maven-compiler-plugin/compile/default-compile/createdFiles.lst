@@ -12,12 +12,14 @@ com\example\SchoolApp\wrapper\ModelWrapper.class
 com\example\SchoolApp\security\SecurityUtill.class
 com\example\SchoolApp\events\CreateAttendanceEvent.class
 com\example\SchoolApp\dto\ResultDto.class
+com\example\SchoolApp\controller\TeacherRestController$OwnerRequestTeachers.class
 com\example\SchoolApp\dto\RegistrationDto.class
 com\example\SchoolApp\repository\RoleRepository.class
 com\example\SchoolApp\service\StudentService.class
 com\example\SchoolApp\events\CreateAttendanceEvent$createAttendanceEvent.class
 com\example\SchoolApp\model\Role.class
 com\example\SchoolApp\controller\AuthController.class
+com\example\SchoolApp\model\Owner.class
 com\example\SchoolApp\controller\StudentController$WrapperRequest.class
 com\example\SchoolApp\dto\PrintResultDto.class
 com\example\SchoolApp\dto\TeacherDto$TeacherDtoBuilder.class
@@ -26,6 +28,7 @@ com\example\SchoolApp\dto\DateTransferDto.class
 com\example\SchoolApp\repository\ResultRepository.class
 com\example\SchoolApp\repository\UserRepository.class
 com\example\SchoolApp\service\UserService.class
+com\example\SchoolApp\repository\OwnerRepository.class
 com\example\SchoolApp\security\JwtFilter.class
 com\example\SchoolApp\events\CreateResultEvent.class
 com\example\SchoolApp\repository\StudentRepository.class
@@ -34,6 +37,7 @@ com\example\SchoolApp\dto\PrintResultDto$PrintResultDtoBuilder.class
 com\example\SchoolApp\model\UserEntity.class
 com\example\SchoolApp\model\Teacher$TeacherBuilder.class
 com\example\SchoolApp\repository\TeacherRepository.class
+com\example\SchoolApp\controller\AuthController$LoginResponseWrapper.class
 com\example\SchoolApp\service\ResultService.class
 com\example\SchoolApp\dto\AttendanceDto$AttendanceDtoBuilder.class
 com\example\SchoolApp\service\AttendanceService.class
@@ -41,7 +45,9 @@ com\example\SchoolApp\repository\AttendanceRepository.class
 com\example\SchoolApp\dto\TeacherDto.class
 com\example\SchoolApp\controller\StudentController.class
 com\example\SchoolApp\events\CreateUserEvent.class
+com\example\SchoolApp\service\OwnerService.class
 com\example\SchoolApp\controller\TeacherRestController.class
 com\example\SchoolApp\controller\ResultController$WrapperRequest.class
+com\example\SchoolApp\model\Owner$OwnerBuilder.class
 com\example\SchoolApp\SchoolAppApplication.class
 com\example\SchoolApp\controller\ResultController$StdResultDetails.class
