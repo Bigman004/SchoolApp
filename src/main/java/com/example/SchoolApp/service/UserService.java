@@ -1,6 +1,7 @@
 package com.example.SchoolApp.service;
 
 import com.example.SchoolApp.events.CreateUserEvent;
+import com.example.SchoolApp.security.SecurityUtill;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.event.EventListener;
@@ -93,9 +94,10 @@ public class UserService {
 	 * @return
 	 */
 	public boolean changePassword(String password, RegistrationDto user) {
+		String username = SecurityUtill.getSessionLoader();
 		UserEntity userEntity;
 		Authentication authentication = authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(user.getRegistrationNumber(), 
+					.authenticate(new UsernamePasswordAuthenticationToken(username,
 							user.getPassword()));
 		if(authentication.isAuthenticated()) {
 			userEntity = userRepository.findByRegistrationNumber(user.getRegistrationNumber());
