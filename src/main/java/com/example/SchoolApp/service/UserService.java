@@ -100,7 +100,7 @@ public class UserService {
 					.authenticate(new UsernamePasswordAuthenticationToken(username,
 							user.getPassword()));
 		if(authentication.isAuthenticated()) {
-			userEntity = userRepository.findByRegistrationNumber(user.getRegistrationNumber());
+			userEntity = userRepository.findByRegistrationNumber(username);
 			userEntity.setPassword(passwordEncoder.encode(password));
 			userRepository.save(userEntity);
 			return true;
