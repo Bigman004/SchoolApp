@@ -20,6 +20,8 @@ jobs:
     - name: Build image
       run: docker build -t bigman004/java-application:latest .
     - name: push image
-      run: docker push bigman004/java-application:latest
+      run: 
+        docker login -u bigman004 -p {{secrets.DOCKER_SECRET}}
+        docker push bigman004/java-application:latest
    
       
