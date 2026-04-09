@@ -19,9 +19,9 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: Build image
       run: docker build -t bigman004/java-application:latest .
+    - name: login
+      run:  docker login -u bigman004 -p {{secrets.DOCKER_SECRET}}
     - name: push image
-      run: 
-        docker login -u bigman004 -p {{secrets.DOCKER_SECRET}}
-        docker push bigman004/java-application:latest
+      run:  docker push bigman004/java-application:latest
    
       
