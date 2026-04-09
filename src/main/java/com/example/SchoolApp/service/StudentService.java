@@ -91,6 +91,8 @@ public class StudentService {
 				.stateOfOrigin(std.getStateOfOrigin())
 				.parentPhone(std.getParentPhone())
 				.homeAddress(std.getHomeAddress())
+				.classOfStudent(std.getClassOfStudent())
+				.regNumber(std.getRegNumber())
 				.LGA(std.getLGA())
 				.build();
 

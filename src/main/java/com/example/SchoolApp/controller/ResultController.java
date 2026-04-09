@@ -70,6 +70,8 @@ public class ResultController {
 				.testResult(test)
 				.studentFirstName(studentService.getStudentDtoById(studentId).getFirstName())
 				.studentLastName(studentService.getStudentDtoById(studentId).getLastName())
+				.studentClass(studentService.getStudentDtoById(studentId).getClassOfStudent())
+				.regNumber(studentService.getStudentDtoById(studentId).getRegNumber())
 				.build(),
 				HttpStatus.OK);
 	}
@@ -95,6 +97,7 @@ public class ResultController {
 	private class StdResultDetails extends ResultDto{
 		String firstName;
 		String lastName;
+
 		StdResultDetails(ResultDto result){
 			this.setTerm(result.getTerm());
 			this.setBasicScience(result.getBasicScience());
@@ -112,6 +115,7 @@ public class ResultController {
 		}
 		public String getFirstName() { return firstName;}
 		public String getLastName() {return lastName;}
+
 	}
 	private class WrapperRequest{
 		private List<StdResultDetails> firstTerm, secondTerm, thirdTerm;

@@ -10,4 +10,6 @@ public class PrintResultDto {
     private ResultDto examResult;
     private String studentFirstName;
     private String studentLastName;
+    private String studentClass;
+    private String regNumber;
 }
