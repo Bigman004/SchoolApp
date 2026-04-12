@@ -78,7 +78,7 @@ public class AuthController {
 	        return ResponseEntity.ok("Total users: " + users.size());
 	    }
 	
-	@Secured("TEACHER")
+	@Secured({"TEACHER", "ADMIN"})
 	@PostMapping("/change_password")
 	public ResponseEntity<?> changePassword(@RequestBody RegistrationDto user,
 			@RequestParam(value ="password") String password){
