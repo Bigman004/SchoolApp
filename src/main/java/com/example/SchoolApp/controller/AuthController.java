@@ -43,7 +43,6 @@ public class AuthController {
     @PostMapping("/create")
     public String beginApp() {
         ownerService.startApplication();
-		logger.info("Application started");
         return "application started";
     }
 	@GetMapping("/register")
@@ -63,9 +62,9 @@ public class AuthController {
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody RegistrationDto user, 
 			HttpServletResponse response) {
+		System.out.println(user);
 		String token = userService.verifyUser(user);
 		String username = jwtService.extractUsername(token);
-		logger.info("username : " + username +" login");
 		return new ResponseEntity<>(
 				new LoginResponseWrapper(token,
 				userService.getUserRole(username)),

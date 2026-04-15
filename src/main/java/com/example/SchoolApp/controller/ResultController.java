@@ -1,7 +1,6 @@
 package com.example.SchoolApp.controller;
 
 import java.util.ArrayList;
-import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -35,8 +34,6 @@ import lombok.experimental.SuperBuilder;
 public class ResultController {
 	private ResultService resultService;
 	private StudentService studentService;
-
-	private static final Logger logger = LoggerFactory.getLogger(ResultController.class);
 	
 	@Autowired
 	public ResultController(ResultService resultService, StudentService studentService) {
@@ -53,7 +50,6 @@ public class ResultController {
 	public ResponseEntity<?> getResults(@PathVariable String info) {
 		String[] str = info.split("-");
 		ResultDto result = resultService.getStudentResult(Long.parseLong(str[0]), str[1], str[2]);
-		logger.info("student result: "+ info);
 		return ResponseEntity.ok(result);
 	}
 	@PostMapping("{info}")
@@ -63,7 +59,7 @@ public class ResultController {
 		String[] str = info.split("-");
 		long Id = resultService.getResultId(Long.parseLong(str[0]), str[1], str[2]);
 		resultService.updateResult(result, Id);
-		logger.info("upload student result: "+ info);
+
 		return "teacherPage";
 	}
 	@GetMapping("{studentId}/{term}")
@@ -71,8 +67,6 @@ public class ResultController {
 											  @PathVariable Long studentId) {
 		ResultDto test = resultService.getStudentResult(studentId, term, "test");
 		ResultDto exam = resultService.getStudentResult(studentId, term, "exam");
-		logger.info("student result print: "+ studentId);
-
 		return new ResponseEntity<>(PrintResultDto.builder()
 				.examResult(exam)
 				.testResult(test)
