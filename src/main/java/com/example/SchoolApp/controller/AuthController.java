@@ -1,8 +1,10 @@
 package com.example.SchoolApp.controller;
 
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.example.SchoolApp.dto.TeacherDto;
+import com.example.SchoolApp.model.Teacher;
+import com.example.SchoolApp.security.SecurityUtill;
 import com.example.SchoolApp.service.JWTService;
 import com.example.SchoolApp.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,6 @@ public class AuthController {
 	private TeacherService teacherService;
     private OwnerService ownerService;
 	private JWTService jwtService;
-	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 	
 	@Autowired
 	public AuthController(UserService userService,
@@ -81,6 +82,7 @@ public class AuthController {
 	@PostMapping("/change_password")
 	public ResponseEntity<?> changePassword(@RequestBody RegistrationDto user,
 			@RequestParam(value ="password") String password){
+		System.out.println(password +" "+ user );
 		System.out.println(userService.changePassword(password, user));
 		return new ResponseEntity<String>("change password success", HttpStatus.OK);
 	}
