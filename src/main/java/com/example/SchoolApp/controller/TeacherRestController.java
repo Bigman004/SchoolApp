@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.example.SchoolApp.dto.TeacherDto;
 import com.example.SchoolApp.security.SecurityUtill;
+import com.example.SchoolApp.service.AttendanceService;
 import com.example.SchoolApp.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,13 +28,14 @@ public class TeacherRestController {
 	
 	private StudentService studentService;
 	private TeacherService teacherService;
-	private OwnerService ownerService;
+	private AttendanceService attendanceService;
 
 	@Autowired
 	public TeacherRestController(StudentService studentService,
-	                             TeacherService teacherService, OwnerService ownerService) {
+	                             TeacherService teacherService, AttendanceService attendanceService) {
 		this.studentService = studentService;
 		this.teacherService = teacherService;
+		this.attendanceService = attendanceService;
 	}
 
 	@Secured("ADMIN")
@@ -60,11 +62,11 @@ public class TeacherRestController {
 	@Secured("ADMIN")
 	public ResponseEntity<?> adminPageView(){
 		String username = SecurityUtill.getSessionLoader();
-		System.out.println(username);
 		return new ResponseEntity<>(teacherService.getAllTeachers()
 				.stream().map(teacher -> new OwnerRequestTeachers(
 						studentService.getclassSize(teacher.getTeacherClass())
-						,teacher)).
+						,teacher,
+						attendanceService.amountOfDay())).
 						collect(Collectors.toList()), HttpStatus.OK);
 	}
 
@@ -72,12 +74,15 @@ public class TeacherRestController {
 	private class OwnerRequestTeachers {
 		TeacherDto teacher;
 		int numberOfStudents;
+		int SchoolOpens;
 		public OwnerRequestTeachers(int numberOfStudents,
-									TeacherDto teacher) {
+									TeacherDto teacher, int SchoolOpens) {
 			this.numberOfStudents = numberOfStudents;
 			this.teacher = teacher;
+			this.SchoolOpens = SchoolOpens;
 		}
 		public int getNumberOfStudents() {return numberOfStudents;}
 		public TeacherDto getTeacher() {return teacher;}
+		public int getSchoolOpens() {return SchoolOpens;}
 	}
 }

@@ -17,4 +17,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 	boolean existsByStudentIdAndDate(@Param("studentId") Long studentId, @Param("date") LocalDate date);
 	
 	List<Attendance> findByTimestamp(LocalDate timestamp);
+
+	boolean existsByTimestamp(LocalDate timestamp);
 }

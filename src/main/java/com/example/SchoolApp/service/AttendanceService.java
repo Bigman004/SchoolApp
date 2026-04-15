@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.example.SchoolApp.SchoolModels;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,5 +93,17 @@ public class AttendanceService {
 				.map(attendance -> mapToAttendanceDto(attendance))
 				.collect(Collectors.toList());
 	}
-	
+	public int amountOfDay() {
+		int count = 0;
+		LocalDate startTerm = SchoolModels.startTerm;
+		LocalDate endTerm = SchoolModels.endTerm;
+		while(startTerm.isBefore(endTerm)) {
+			if(attendanceRepository.existsByTimestamp(startTerm)) {
+				count++;
+			}
+			startTerm = startTerm.plusDays(1);
+		}
+
+		return count;
+	}
 }

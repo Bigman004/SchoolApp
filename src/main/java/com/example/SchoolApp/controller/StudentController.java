@@ -105,7 +105,6 @@ public class StudentController {
 			mark = true;
 		else
 			mark = false;
-		System.out.println(attended);
 		boolean success = attendanceService.markAttendance(Id, "", mark);
 		return new ResponseEntity<>(success, HttpStatus.ACCEPTED);
 	}
@@ -121,7 +120,6 @@ public class StudentController {
 		System.out.println(date.getYear() + "-" + date.getMonth()+ "-" + date.getDay());
 		LocalDate specific = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
 		if(specific.isBefore(LocalDate.now()) || specific.isEqual(LocalDate.now())) {
-			System.out.println(specific);
 			return new ResponseEntity<>(attendanceService.getAttendanceDate(specific), HttpStatus.ACCEPTED);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
