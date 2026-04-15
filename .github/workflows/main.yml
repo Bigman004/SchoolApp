@@ -17,6 +17,9 @@ jobs:
         cache: maven
     - name: Build Application
       run: mvn -B package --file pom.xml
+      env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
     - name: Build image
       run: docker build -t bigman004/java-application:latest .
     - name: login
