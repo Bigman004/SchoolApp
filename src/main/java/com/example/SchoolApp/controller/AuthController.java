@@ -87,6 +87,11 @@ public class AuthController {
 		logger.info("Change Password Success");
 		return new ResponseEntity<String>("change password success", HttpStatus.OK);
 	}
+
+	@GetMapping("/ping")
+	public ResponseEntity<?> ping() {
+		return new ResponseEntity<>("pong", HttpStatus.OK);
+	}
 	class LoginResponseWrapper {
 		String token;
 		String message;
