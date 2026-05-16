@@ -56,7 +56,7 @@ public class AuthController {
 	public ResponseEntity<?> sendPasswordLink(@RequestParam String username) {
 		String result = "";
 		String randomtoken = UUID.randomUUID().toString();
-		String link =  "http://localhost:8080/template/send_link/"+ randomtoken;
+		String link =  "https://java-application-latest-ywhd.onrender.com/template/send_link/"+ randomtoken;
 		try{
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
 			byte[] hash = sha.digest(randomtoken.getBytes());

@@ -47,7 +47,7 @@ public class SecurityConfig {
 				.csrf(customizer -> customizer.disable())
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("/login", "/create", "/debug", "/send_password_link", "/template/**")
+						.requestMatchers("/login", "/create", "/debug", "/template/**", "/send_password_link")
 						.permitAll().anyRequest().authenticated())
 				.httpBasic(customizer -> customizer.disable())
 				.sessionManagement(session ->
@@ -62,7 +62,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+		corsConfiguration.setAllowedOrigins(List.of("https://school-ui-eight.vercel.app/"));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT","DELETE"));
 		corsConfiguration.setAllowCredentials(true);
 		corsConfiguration.addAllowedHeader("*");
