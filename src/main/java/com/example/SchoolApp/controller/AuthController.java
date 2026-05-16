@@ -53,7 +53,7 @@ public class AuthController {
         return "application started";
     }
 	@PostMapping("/send_password_link")
-	public String sendPasswordLink(@RequestParam String username) {
+	public ResponseEntity<?> sendPasswordLink(@RequestParam String username) {
 		String result = "";
 		String randomtoken = UUID.randomUUID().toString();
 		String link =  "http://localhost:8080/template/send_link/"+ randomtoken;
@@ -63,27 +63,32 @@ public class AuthController {
 			result = new String(Hex.encode(hash));
 		}
 		catch(Exception e){
-			System.out.println(e.getMessage());
+			return  ResponseEntity.badRequest().build();
 		}
+		try {
+			String email = null;
+			if (userService.getUserRole(username).equals("TEACHER")) {
+				email = teacherService.getTeacher(username).getEmail();
+			}
+			linkService.save(LinkHash.builder()
+					.email(email)
+					.username(username)
+					.link(result) // save the hash
+					.created(LocalDateTime.now())
+					.build());
+			linkService.sendEmail(LinkHash.builder()
+					.email(email)
+					.username(username)
+					.link(link) //send the link
+					.created(LocalDateTime.now())
+					.build());
 
-		String email = null;
-		if(userService.getUserRole(username).equals("TEACHER")){
-			email = teacherService.getTeacher(username).getEmail();
+			return new ResponseEntity<>(email + ": " + randomtoken + "\n" + "hash: " + result,
+					HttpStatus.OK);
 		}
-		linkService.save(LinkHash.builder()
-				.email(email)
-				.username(username)
-				.link(result) // save the hash
-				.created(LocalDateTime.now())
-				.build());
-		linkService.sendEmail(LinkHash.builder()
-				.email(email)
-				.username(username)
-				.link(link) //send the link
-				.created(LocalDateTime.now())
-				.build());
-
-		return email+ ": " + randomtoken+"\n" + "hash: "+ result;
+		catch(Exception e){
+			return new ResponseEntity<>("error processing request", HttpStatus.FORBIDDEN);
+		}
 
 	}
 	@GetMapping("/register")

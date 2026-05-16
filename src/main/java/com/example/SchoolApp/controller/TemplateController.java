@@ -27,11 +27,18 @@ public class TemplateController {
     public String send_link(@PathVariable String linkToken, Model model) {
         model.addAttribute("linkToken", linkToken);
         log.info("send_link");
-        log.info(linkService.linkExist(linkToken).toString()+ ": link exist");
-        return "login";
+        if(linkService.linkExist(linkToken)) {
+            log.info(linkService.linkExist(linkToken).toString() + ": link exist");
+            return "login";
+        }
+        else {
+            log.info(linkService.linkExist(linkToken).toString() + ": link exist");
+            return "error";
+        }
     }
     @PostMapping("/send_link/{linkToken}")
-    public String changePassword(@ModelAttribute("password1") String password1,
+    public String changePassword(Model model,
+            @ModelAttribute("password1") String password1,
                                  @ModelAttribute("password2") String password2, @PathVariable String linkToken) {
         if(password1.equals(password2) && linkService.linkExist(linkToken)) {
             log.info("changePassword");
@@ -42,6 +49,7 @@ public class TemplateController {
             return "success";
         }
         else{
+            model.addAttribute("message", "link expired or does not exist" );
             log.info("link expired or does not exist");
         }
        return "error";
