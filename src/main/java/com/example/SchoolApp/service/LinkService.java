@@ -65,7 +65,7 @@ public class LinkService {
         try {
             String credentials = "user:" + sharedKey;
             String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
-            HttpPost post = new HttpPost("http://mailing-service/send_password_link");
+            HttpPost post = new HttpPost("https://api-gateway-sxrh.onrender.com/mailing-service/send_password_link");
             Gson gson = new Gson();
             StringEntity stringEntity = new StringEntity(gson.toJson(request), "UTF-8");
             CloseableHttpClient httpclient = HttpClients.createDefault();
