@@ -1,26 +1,32 @@
 package com.example.SchoolApp.controller;
 
+import java.security.MessageDigest;
+import java.time.LocalDateTime;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.example.SchoolApp.service.JWTService;
-import com.example.SchoolApp.service.OwnerService;
+import java.util.UUID;
+
+import com.example.SchoolApp.dto.TeacherDto;
+import com.example.SchoolApp.model.LinkHash;
+import com.example.SchoolApp.model.Teacher;
+import com.example.SchoolApp.security.SecurityUtill;
+import com.example.SchoolApp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.SchoolApp.dto.RegistrationDto;
 import com.example.SchoolApp.model.UserEntity;
-import com.example.SchoolApp.service.TeacherService;
-import com.example.SchoolApp.service.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
+
+import javax.crypto.Mac;
 
 @RestController
 @RequestMapping("/")
@@ -29,24 +35,62 @@ public class AuthController {
 	private TeacherService teacherService;
     private OwnerService ownerService;
 	private JWTService jwtService;
-
-	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+	private LinkService linkService;
 	
 	@Autowired
 	public AuthController(UserService userService,
 						  TeacherService teacherService, JWTService jwtService
-    ,					 OwnerService ownerService) {
+    	,LinkService linkService, OwnerService ownerService) {
 		this.userService = userService;
 		this.teacherService = teacherService;
         this.ownerService = ownerService;
 		this.jwtService = jwtService;
+		this.linkService = linkService;
 	}
     @PostMapping("/create")
     public String beginApp() {
         ownerService.startApplication();
-		logger.info("Application started");
         return "application started";
     }
+	@PostMapping("/send_password_link")
+	public ResponseEntity<?> sendPasswordLink(@RequestParam String username) {
+		String result = "";
+		String randomtoken = UUID.randomUUID().toString();
+		String link =  "http://localhost:8080/template/send_link/"+ randomtoken;
+		try{
+			MessageDigest sha = MessageDigest.getInstance("SHA-256");
+			byte[] hash = sha.digest(randomtoken.getBytes());
+			result = new String(Hex.encode(hash));
+		}
+		catch(Exception e){
+			return  ResponseEntity.badRequest().build();
+		}
+		try {
+			String email = null;
+			if (userService.getUserRole(username).equals("TEACHER")) {
+				email = teacherService.getTeacher(username).getEmail();
+			}
+			linkService.save(LinkHash.builder()
+					.email(email)
+					.username(username)
+					.link(result) // save the hash
+					.created(LocalDateTime.now())
+					.build());
+			linkService.sendEmail(LinkHash.builder()
+					.email(email)
+					.username(username)
+					.link(link) //send the link
+					.created(LocalDateTime.now())
+					.build());
+
+			return new ResponseEntity<>(email + ": " + randomtoken + "\n" + "hash: " + result,
+					HttpStatus.OK);
+		}
+		catch(Exception e){
+			return new ResponseEntity<>("error processing request", HttpStatus.FORBIDDEN);
+		}
+
+	}
 	@GetMapping("/register")
 	public String registerFrom(Model model) {
 		RegistrationDto registrationDto = new RegistrationDto();
@@ -64,9 +108,9 @@ public class AuthController {
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody RegistrationDto user, 
 			HttpServletResponse response) {
+		System.out.println(user);
 		String token = userService.verifyUser(user);
 		String username = jwtService.extractUsername(token);
-		logger.info("Username : " + username +" :token generated");
 		return new ResponseEntity<>(
 				new LoginResponseWrapper(token,
 				userService.getUserRole(username)),
@@ -83,14 +127,9 @@ public class AuthController {
 	@PostMapping("/change_password")
 	public ResponseEntity<?> changePassword(@RequestBody RegistrationDto user,
 			@RequestParam(value ="password") String password){
+		System.out.println(password +" "+ user );
 		System.out.println(userService.changePassword(password, user));
-		logger.info("Change Password Success");
 		return new ResponseEntity<String>("change password success", HttpStatus.OK);
-	}
-
-	@GetMapping("/ping")
-	public ResponseEntity<?> ping() {
-		return new ResponseEntity<>("pong", HttpStatus.OK);
 	}
 	class LoginResponseWrapper {
 		String token;

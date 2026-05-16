@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thmyeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-page {
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .skeleton {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            background-color: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .skeleton::after {
+            content: "✓";
+            font-size: 40px;
+            color: #2e7d32;
+            line-height: 1;
+        }
+
+        h2.title {
+            font-size: 22px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            font-size: 15px;
+            color: #6b6b6b;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .info-card .label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .info-card .hint {
+            font-size: 12px;
+            color: #6b6b6b;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: transparent;
+            border: 1px solid #c0c0c0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .btn:hover {
+            background-color: #f0f0f0;
+        }
+	</style>
+  </head>
+  <body>
+  <div class ="success-page">
+  <div class = "skeleton"> </div>
+      <h2 class="title">Password changed</h2>
+      <p class="subtitle">Your password has been updated. You can now log in with your new credentials.</p>
+      <div class="info-card">
+          <span class="label">Keep your account secure<br><span class="hint">Never share your password with anyone.</span></span>
+      </div>
+      <a href="/login" class="btn">Back to login</a>
+  </div>
+  </body>
+</html>

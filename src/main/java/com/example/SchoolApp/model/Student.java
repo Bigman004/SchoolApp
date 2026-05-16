@@ -36,6 +36,7 @@ public class Student {
 	private String LGA;
 	private Long userId;
 	private String classOfStudent;
+	@NotEmpty(message = "parent email cannot be empty")
 	private String parentEmail;
 	
 }

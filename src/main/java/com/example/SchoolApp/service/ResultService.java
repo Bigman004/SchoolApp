@@ -20,7 +20,6 @@ import static io.swagger.v3.core.jackson.TypeNameResolver.std;
 @Service
 public class ResultService {
 	private ResultRepository resultRepository;
-	;
 	
 	@Autowired
 	public ResultService(ResultRepository resultRepository){
