@@ -27,7 +27,7 @@ import java.util.Base64;
 @Slf4j
 public class LinkService {
 
-    @Value("${shared.key}")
+    @Value("${spring.security.user.password}")
     private String sharedKey;
 
     private LinkRepository linkRepository;
