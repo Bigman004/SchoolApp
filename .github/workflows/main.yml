@@ -16,6 +16,8 @@ jobs:
         distribution: 'zulu'
         cache: maven
     - name: Build Application
+      env:
+        SHARED_KEY: ${{ secrets.SHARED_KEY }}
       run: >
         mvn clean install
         -DDB_PASSWORD=${{secrets.DB_PASSWORD}}
