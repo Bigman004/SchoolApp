@@ -61,6 +61,7 @@ public class ModelWrapper {
         return SchoolDto.builder()
                 .id(school.getId())
                 .schoolName(school.getSchoolName())
+                .username(school.getUsername())
                 .schoolAddress(school.getSchoolAddress())
                 .schoolCode(school.getSchoolCode())
                 .build();
@@ -72,7 +73,9 @@ public class ModelWrapper {
                 .schoolName(schoolDto.getSchoolName())
                 .lastName(schoolDto.getLastName())
                 .firstName(schoolDto.getFirstName())
+                .username(schoolDto.getUsername())
                 .email(schoolDto.getEmail())
                 .build();
     }
+
 }

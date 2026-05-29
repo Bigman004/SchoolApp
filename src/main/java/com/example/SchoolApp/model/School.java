@@ -22,4 +22,5 @@ public class School {
     private String schoolCode;
     private String schoolAddress;
     private String email;
+    private String username;
 }
