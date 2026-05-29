@@ -31,8 +31,10 @@ public class LinkService {
     private String sharedKey;
 
     private LinkRepository linkRepository;
+
+
     @Autowired
-    public void setLinkRepository(LinkRepository linkRepository) {
+    public LinkService(LinkRepository linkRepository) {
         this.linkRepository = linkRepository;
     }
 
