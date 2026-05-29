@@ -5,19 +5,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.SchoolApp.dto.TeacherDto;
+import com.example.SchoolApp.dto.SchoolDto;
 import com.example.SchoolApp.model.LinkHash;
-import com.example.SchoolApp.model.Teacher;
-import com.example.SchoolApp.security.SecurityUtill;
 import com.example.SchoolApp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.codec.Hex;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,32 +21,25 @@ import com.example.SchoolApp.model.UserEntity;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-import javax.crypto.Mac;
-
 @RestController
 @RequestMapping("/")
 public class AuthController {
 	private UserService userService;
 	private TeacherService teacherService;
-    private OwnerService ownerService;
+	private SchoolService schoolService;
 	private JWTService jwtService;
 	private LinkService linkService;
 	
 	@Autowired
 	public AuthController(UserService userService,
 						  TeacherService teacherService, JWTService jwtService
-    	,LinkService linkService, OwnerService ownerService) {
+    	,LinkService linkService, SchoolService schoolService) {
 		this.userService = userService;
 		this.teacherService = teacherService;
-        this.ownerService = ownerService;
+        this.schoolService = schoolService;
 		this.jwtService = jwtService;
 		this.linkService = linkService;
 	}
-    @PostMapping("/create")
-    public String beginApp() {
-        ownerService.startApplication();
-        return "application started";
-    }
 	@PostMapping("/send_password_link")
 	public ResponseEntity<?> sendPasswordLink(@RequestParam String username) {
 		String result = "";
@@ -108,7 +96,6 @@ public class AuthController {
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody RegistrationDto user, 
 			HttpServletResponse response) {
-		System.out.println(user);
 		String token = userService.verifyUser(user);
 		String username = jwtService.extractUsername(token);
 		return new ResponseEntity<>(
@@ -123,13 +110,18 @@ public class AuthController {
 	        return ResponseEntity.ok("Total users: " + users.size());
 	    }
 	
-	@Secured({"TEACHER", "ADMIN"})
+	@Secured({"TEACHER", "ADMIN", "DEVELOPER"})
 	@PostMapping("/change_password")
 	public ResponseEntity<?> changePassword(@RequestBody RegistrationDto user,
 			@RequestParam(value ="password") String password){
-		System.out.println(password +" "+ user );
-		System.out.println(userService.changePassword(password, user));
-		return new ResponseEntity<String>("change password success", HttpStatus.OK);
+
+		if(userService.changePassword(password, user))
+			return new ResponseEntity<String>("change password success", HttpStatus.OK);
+		return new ResponseEntity<>("change password failed", HttpStatus.FORBIDDEN);
+	}
+	@PostMapping("developer/add_school")
+	public ResponseEntity<?> addSchool(@RequestBody SchoolDto schoolDto) {
+		return new ResponseEntity<>(schoolService.save(schoolDto),HttpStatus.OK);
 	}
 	class LoginResponseWrapper {
 		String token;

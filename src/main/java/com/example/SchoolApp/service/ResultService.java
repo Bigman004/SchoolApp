@@ -1,8 +1,8 @@
 package com.example.SchoolApp.service;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.SchoolApp.SchoolModels;
 import com.example.SchoolApp.events.CreateResultEvent;
 import com.example.SchoolApp.wrapper.ModelWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,88 +20,48 @@ import static io.swagger.v3.core.jackson.TypeNameResolver.std;
 @Service
 public class ResultService {
 	private ResultRepository resultRepository;
-	
+	public static String[] subjects = new String[]{
+			"Mathematics", "English", "Basic Science", "Social Studies", "Computer","handwriting",
+			"Verbal Reasoning", "Quantitative", "CRK", "Creative Art"
+	};
+
 	@Autowired
-	public ResultService(ResultRepository resultRepository){
+	public ResultService(ResultRepository resultRepository) {
 		this.resultRepository = resultRepository;
 	}
-	
 
-	public void updateResult(ResultDto resultDto, long resultId) {
-		Result result = resultRepository.findById(resultId).get();
-		result.setBasicScience(resultDto.getBasicScience());
-		result.setCivicEducation(resultDto.getCivicEducation());
-		result.setCRK(resultDto.getCRK());
-		result.setEnglish(resultDto.getEnglish());
-		result.setMath(resultDto.getMath());
-		result.setPHE(resultDto.getPHE());
-		result.setSocialStudies(resultDto.getSocialStudies());
-		result.setComputer(resultDto.getComputer());
-		result.setRhymes(resultDto.getRhymes());
-		result.setHandwriting(result.getHandwriting());
-		result.setQuantitative(resultDto.getQuantitative());
-		result.setVerbalReasoning(resultDto.getVerbalReasoning());
-		result.setCreativeArt(resultDto.getCreativeArt());
-		resultRepository.save(result);	
-		}
-	public List<ResultDto> ResultByTerm(String term){
-		List<Result> list = resultRepository.findAllByTerm(term);
-		return list.stream()
-				.map(result -> mapToResultDto(result))
-				.collect(Collectors.toList());
-	}
-	
 	private ResultDto mapToResultDto(Result result) {
-		ResultDto resultDto =  new ResultDto();
-		resultDto.setBasicScience(result.getBasicScience());
-		resultDto.setCivicEducation(result.getCivicEducation());
-		resultDto.setCRK(result.getCRK());
-		resultDto.setEnglish(result.getEnglish());
-		resultDto.setId(result.getId());
-		resultDto.setMath(result.getMath());
-		resultDto.setPHE(result.getPHE());
-		resultDto.setSocialStudies(result.getSocialStudies());
-		resultDto.setTerm(result.getTerm());
-		resultDto.setStudentId(result.getStudentId());
-		resultDto.setComputer(result.getComputer());
-		resultDto.setRhymes(result.getRhymes());
-		resultDto.setHandwriting(result.getHandwriting());
-		resultDto.setQuantitative(result.getQuantitative());
-		resultDto.setVerbalReasoning(result.getVerbalReasoning());
-		resultDto.setCreativeArt(result.getCreativeArt());
-		resultDto.setType(result.getType());
-		return resultDto;
+		return ResultDto.builder()
+				.Id(result.getId())
+				.score(result.getScore())
+				.term(result.getTerm())
+				.type(result.getType())
+				.schoolId(result.getSchoolId())
+				.studentId(result.getStudentId())
+				.classOfStudent(result.getClassOfStudent())
+				.subjectName(result.getSubjectName())
+				.build();
 	}
-	public ResultDto getStudentResult(Long studentId, String term, String type) {
-		return mapToResultDto(
-				resultRepository.findByStudentIdAndTermAndType(
-						studentId, term, type
-				)
-		);
+	private Result mapToResult(ResultDto result) {
+		return Result.builder()
+				.score(result.getScore())
+				.term(result.getTerm())
+				.type(result.getType())
+				.schoolId(result.getSchoolId())
+				.studentId(result.getStudentId())
+				.subjectName(result.getSubjectName())
+				.classOfStudent(result.getClassOfStudent())
+				.Id(result.getId())
+				.build();
 	}
-	/***
-	 * the method return a student id for the result controller class
-	 * @param studentId
-	 * @param term
-	 * @param type
-	 * @return
-	 */
-	public long getResultId(Long studentId, String term, String type) {
-		List<Result> list =  resultRepository.findAllByTermAndType(term, type);
-		for(Result result : list){
-			if(result.getStudentId().equals(studentId)){
-				return result.getId();
-			}
-		}
-		return -1;
-	}
+
 	public void selectionSort(ArrayList<ResultDto> resultArrayList) {
 		ResultDto temp;
-		for(int i =0; i < resultArrayList.size(); i++) {
+		for (int i = 0; i < resultArrayList.size(); i++) {
 			int min = i;
 			int j = i;
-			while(j < resultArrayList.size()) {
-				if(resultArrayList.get(min).getId() > resultArrayList.get(j).getId() )
+			while (j < resultArrayList.size()) {
+				if (resultArrayList.get(min).getId() > resultArrayList.get(j).getId())
 					min = j;
 				j++;
 			}
@@ -111,25 +71,91 @@ public class ResultService {
 		}
 		return;
 	}
-	public List<ResultDto> getResultsByTermAndType(String term, String type) {
-		return resultRepository.findAllByTermAndType(term, type).stream()
-				.map(result -> mapToResultDto(result))
-				.collect(Collectors.toList());
-	}
+
+
 	@EventListener
 	public void createResultEvent(CreateResultEvent event) {
 		String[] term = {"1st term", "2nd term", "3rd term"};
 		String[] types = {"test", "exam"};
 		Result result;
-		for(String str: types) {
+		for (String str : types) {
 			for (String s : term) {
-				result = new Result();
-				result.setTerm(s);
-				result.setStudentId(event.studentID());
-				result.setType(str);
-				resultRepository.save(result);
+				saveSubjects(event.schoolID(),
+						event.studentID(),
+						event.classOfStudent(),
+						s, str); //save to database
 			}
 		}
 		return;
+	}
+	public List<Result> getClassResult(
+			String term, String type, Long studentId) {
+		return resultRepository.findAllByTermAndTypeAndStudentId(
+				term, type, studentId);
+
+	}
+
+	public List<ResultDto> getStudentResult(Long studentId, String term, String type) {
+		return resultRepository.findAllByStudentIdAndTermAndType(studentId, term, type)
+				.stream().map(this::mapToResultDto)
+				.collect(Collectors.toList());
+	}
+
+	public double getAverageScore(String className, Long schoolId) {
+		return resultRepository.sumTestScore(className, SchoolModels.CURRENT_TERM, schoolId);
+	}
+	public boolean saveResult(Long studentId, String term,
+	                       String type, Map<String, Integer> body) {
+		if(!(body.size() == subjects.length &&
+				body.keySet().containsAll(Arrays.asList(subjects))) ) {
+			return false;
+		}
+		List<ResultDto> resultList = getStudentResult(studentId, term, type);
+		HashMap<String, ResultDto> resultMap = new HashMap<String, ResultDto>();
+		resultList.forEach(
+				result -> {
+					resultMap.put(result.getSubjectName(), result);
+				}
+		);
+		body.forEach(
+				(subjectName, score) -> {
+					resultMap.get(subjectName).setScore(score);
+				}
+		);
+		resultList = new ArrayList<>(resultMap.values());
+		resultRepository.saveAll(
+				resultList.stream().map(
+                this::mapToResult).
+				collect(Collectors.toList())
+		);
+		return true;
+	}
+	/**
+	 * -------------------PRIVATE METHOD--------------------------------------------------
+	 */
+
+	/**
+	 * -----------------------------------------
+	 *
+	 * @param schoolId
+	 * @param studentId
+	 * @param classOfStudent
+	 * @param term
+	 * @param type
+	 */
+	private void saveSubjects(Long schoolId, Long studentId,
+							  String classOfStudent, String term, String type) {
+		List<Result> results = new ArrayList<>();
+		for(String s : subjects){
+			results.add(Result.builder()
+							.schoolId(schoolId)
+					.studentId(studentId)
+					.term(term)
+					.classOfStudent(classOfStudent)
+							.subjectName(s)
+							.type(type)
+					.build());
+		}
+		resultRepository.saveAll(results);
 	}
 }

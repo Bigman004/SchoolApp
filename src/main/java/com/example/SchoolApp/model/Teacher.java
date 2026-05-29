@@ -18,6 +18,7 @@ public class Teacher{
 	private String teacherClass;
 	private String username;   				//reference username
 	private String email;
+	private Long schoolId;  //reference id
 
 	public Teacher() {
 

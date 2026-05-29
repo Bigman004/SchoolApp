@@ -1,14 +1,18 @@
 package com.example.SchoolApp.model;
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "attendance")
 @Data // Lombok for getters/setters
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Attendance {
 
     @Id
@@ -27,4 +31,7 @@ public class Attendance {
 
     @Column(name = "remarks")  
     private String remarks;
+
+    private Long schoolId;
+    private String className;
 }

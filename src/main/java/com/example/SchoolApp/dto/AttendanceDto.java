@@ -10,14 +10,11 @@ import lombok.Data;
 @Builder
 public class AttendanceDto {
 	private Long Id;
-	
 	private String remarks;
-	
 	private boolean status;
-	
 	private String studentFirstName;
-	
 	private String studentLastName;
-	 
-	private LocalDate timestamp; 
+	private LocalDate timestamp;
+	private String className;
+	private Long schoolId;
 }

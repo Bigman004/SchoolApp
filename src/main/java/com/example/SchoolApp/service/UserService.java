@@ -53,31 +53,15 @@ public class UserService {
 
 		Role role = roleRepository.findByName(event.role());
 		System.out.println(role);
-		if(role.getName().equals("STUDENT")) {
+		if(roleRepository.existsByName(event.role())) {
 			UserEntity user = new UserEntity();
 			user.setRegistrationNumber(event.username());
 			user.setPassword(passwordEncoder.encode(event.password()));
 			user.setRole(role);
 			user.setLogin(false);
+			user.setReferenceID(event.referenceId());
 			userRepository.save(user);
 		}
-		else if(role.getName().equals("TEACHER")) {
-			UserEntity user = new UserEntity();
-			user.setRegistrationNumber(event.username());
-			user.setPassword(passwordEncoder.encode(event.password()));
-			user.setRole(role);
-			user.setLogin(false);
-			userRepository.save(user);
-		}
-		else  if(role.getName().equals("ADMIN")) {
-			UserEntity user = new UserEntity();
-			user.setRegistrationNumber(event.username());
-			user.setPassword(passwordEncoder.encode(event.password()));
-			user.setRole(role);
-			user.setLogin(false);
-			userRepository.save(user);
-		}
-
 	}
 
 	public String verifyUser(RegistrationDto user) {
@@ -132,5 +116,9 @@ public class UserService {
 		userEntity.setPassword(passwordEncoder.encode(password));
 		userRepository.save(userEntity);
 		return true;
+	}
+
+	public UserEntity findByUserName(String username) {
+		return userRepository.findByRegistrationNumber(username);
 	}
 }

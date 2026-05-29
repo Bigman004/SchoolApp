@@ -2,6 +2,7 @@ package com.example.SchoolApp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.SchoolApp.events.CreateResultEvent;
 import com.example.SchoolApp.events.CreateUserEvent;
@@ -32,16 +33,18 @@ public class StudentService {
 		String defaultPassword = "std@2025";
 		String registrationPreffix = "22-22op/";
 		studentRepo.save(std);  // to generate ID
-		publisher.publishEvent(new CreateResultEvent(std.getId()));
+		publisher.publishEvent(new CreateResultEvent(std.getId(), std.getSchoolId(), std.getClassOfStudent()));
 		publisher.publishEvent(new CreateUserEvent(std.getId(), registrationPreffix+ std.getId(),
 				"STUDENT", defaultPassword));
 		std.setRegNumber(registrationPreffix+ std.getId());
 		studentRepo.save(std);
 		return;
 	}
+
+
 	/**
 	 * 
-	 * @param std
+	 * @param student
 	 * create a student with the default password
 	 */
 	public void addStudent(StudentDto student) {
@@ -49,7 +52,7 @@ public class StudentService {
 		String defaultPassword = "std@2025";
 		Student std = ModelWrapper.mapToStudent(student);
 		studentRepo.save(std);    //to generate Id
-		publisher.publishEvent(new CreateResultEvent(std.getId()));
+		publisher.publishEvent(new CreateResultEvent(std.getId(), std.getSchoolId(), std.getClassOfStudent()));
 		publisher.publishEvent(new CreateUserEvent(std.getId(), registrationPreffix+ std.getId(),
 				"STUDENT", defaultPassword));
 		std.setRegNumber(registrationPreffix+ std.getId());
@@ -64,6 +67,15 @@ public class StudentService {
 		}
 		return stdList;
 		
+	}
+	public ArrayList<StudentDto> StudentList(String classOfStudent, Long schoolId) {
+		List<Student> list = studentRepo.findByClassOfStudentAndSchoolId(classOfStudent, schoolId);
+		ArrayList<StudentDto> stdList = new ArrayList<>();
+		for(Student std:list) {
+			stdList.add(ModelWrapper.mapToStudentDto(std));
+		}
+		return stdList;
+
 	}
 	private String generateRegNo(long Id) {
 		String preffix = "221132"+ Long.toString(Id);
@@ -99,7 +111,23 @@ public class StudentService {
 	}
 
 
-	public int getclassSize(String classOfStudent) {
-		return  studentRepo.findByClassOfStudent(classOfStudent).size();
+	public int getclassSize(String classOfStudent, Long schoolId) {
+		return  studentRepo.findByClassOfStudentAndSchoolId(classOfStudent, schoolId).size();
+	}
+
+    public void deleteByStudentId(Long studentId) {
+		studentRepo.deleteById(studentId);
+    }
+
+	public List<StudentDto> getStudentsByClass(String className) {
+		return studentRepo.findByClassOfStudent(className).stream().map(
+				student -> ModelWrapper.mapToStudentDto(student)
+		).collect(Collectors.toList());
+	}
+	public List<StudentDto> getStudentsByClass(String className, Long schoolId) {
+		return studentRepo.findByClassOfStudentAndSchoolId(className, schoolId).stream().map(
+				student -> ModelWrapper.mapToStudentDto(student)
+		).collect(Collectors.toList());
 	}
 }
+//thank you, Jesus

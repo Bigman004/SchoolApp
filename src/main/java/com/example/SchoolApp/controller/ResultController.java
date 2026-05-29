@@ -1,134 +1,111 @@
 package com.example.SchoolApp.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.example.SchoolApp.dto.PrintResultDto;
-import org.slf4j.LoggerFactory;
+import com.example.SchoolApp.dto.ResultDto;
+import com.example.SchoolApp.dto.StudentDto;
+import com.example.SchoolApp.model.Result;
+import com.example.SchoolApp.security.SecurityUtill;
+import com.example.SchoolApp.service.ResultService;
+import com.example.SchoolApp.service.StudentService;
+import com.example.SchoolApp.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.SchoolApp.dto.ResultDto;
-import com.example.SchoolApp.model.Result;
-import com.example.SchoolApp.service.ResultService;
-import com.example.SchoolApp.service.StudentService;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import lombok.experimental.SuperBuilder;
 
 @RestController
-@RequestMapping("/result")
-public class ResultController {
-	private ResultService resultService;
-	private StudentService studentService;
-	
-	@Autowired
-	public ResultController(ResultService resultService, StudentService studentService) {
-		this.resultService = resultService;
-		this.studentService = studentService;
-	}
-	
-//	@GetMapping("/{studentId}")
-//	public ResponseEntity<?> studentResult(@PathVariable long studentId, Model model) {
-//		List<ResultDto> results = resultService.getStudentResult(studentId);
-//		return new ResponseEntity<>(results, HttpStatus.OK);
-//	}
-	@GetMapping("{info}")
-	public ResponseEntity<?> getResults(@PathVariable String info) {
-		String[] str = info.split("-");
-		ResultDto result = resultService.getStudentResult(Long.parseLong(str[0]), str[1], str[2]);
-		return ResponseEntity.ok(result);
-	}
-	@PostMapping("{info}")
-	public String uploadResult(@PathVariable String info,
-			@RequestBody ResultDto result) {
-		System.out.println(result);
-		String[] str = info.split("-");
-		long Id = resultService.getResultId(Long.parseLong(str[0]), str[1], str[2]);
-		resultService.updateResult(result, Id);
+@RequestMapping("result")
+public class  ResultController {
 
-		return "teacherPage";
-	}
-	@GetMapping("{studentId}/{term}")
-	public ResponseEntity<?> getStudentResult(@PathVariable String term,
-											  @PathVariable Long studentId) {
-		ResultDto test = resultService.getStudentResult(studentId, term, "test");
-		ResultDto exam = resultService.getStudentResult(studentId, term, "exam");
-		return new ResponseEntity<>(PrintResultDto.builder()
-				.examResult(exam)
-				.testResult(test)
-				.studentFirstName(studentService.getStudentDtoById(studentId).getFirstName())
-				.studentLastName(studentService.getStudentDtoById(studentId).getLastName())
-				.studentClass(studentService.getStudentDtoById(studentId).getClassOfStudent())
-				.regNumber(studentService.getStudentDtoById(studentId).getRegNumber())
-				.build(),
-				HttpStatus.OK);
-	}
-	@GetMapping("/")
-	public ResponseEntity<?> resultPageApi() {
-		String[] terms = {"1st term", "2nd term", "3rd term"};
-		String[] types = {"exam", "test"};
-		List<List<StdResultDetails>> detailList = new ArrayList<List<StdResultDetails>>();
-		for (String term : terms) {
-			for (String type : types) {
-				detailList.add(resultService.
-						getResultsByTermAndType(term, type)
-						.stream().map(result -> new StdResultDetails(result))
-						.collect(Collectors.toList())
-				);
-			}
-		}
+    private ResultService resultService;
+    private StudentService studentService;
+    private TeacherService teacherService;
+
+    @Autowired
+    public ResultController(ResultService resultService, StudentService studentService,  TeacherService teacherService) {
+        this.resultService = resultService;
+        this.studentService = studentService;
+        this.teacherService = teacherService;
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<ResultRequest> getClassResult(
+            @RequestParam(value = "term", defaultValue = "1st term")  String term,
+            @RequestParam(value = "type", defaultValue = "test") String type
+    ) {
+        String username = SecurityUtill.getSessionLoader();
+        String classOfStudent = teacherService.getTeacher(username).getTeacherClass();
+        Long schoolId = teacherService.getTeacher(username).getSchoolId();
+        return new ResponseEntity<>(
+                getStudentResult(term, type, classOfStudent, schoolId),
+                HttpStatus.OK
+        );
+    }
+    @GetMapping("/{studentId}")
+    public ResponseEntity<?> getStudentResult(
+            @PathVariable Long studentId,
+            @RequestParam(value = "term", defaultValue = "")  String term,
+            @RequestParam(value = "type", defaultValue = "") String type
+    )
+    {
+        if(term.isEmpty() || type.isEmpty())
+            return new ResponseEntity<>("term and type must contain a value", HttpStatus.BAD_REQUEST);
+        List<ResultDto> results = resultService.getStudentResult(studentId, term, type);
+        Map<String, Integer> map = new HashMap<>();
+        for(ResultDto result : results) {
+            map.put(result.getSubjectName(), result.getScore());
+        }
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+    @PostMapping("/{studentId}")
+    public ResponseEntity<?> setStudentResult(
+            @PathVariable Long studentId,
+            @RequestBody Map<String, Integer> body,
+            @RequestParam(value = "term", defaultValue = "")  String term,
+            @RequestParam(value = "type", defaultValue = "") String type
+    ){
+        if(term.isEmpty() || type.isEmpty())
+            return new ResponseEntity<>("term and type must contain a value", HttpStatus.BAD_REQUEST);
+        resultService.saveResult(studentId, term, type, body);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private ResultRequest getStudentResult(String term, String type, String classOfStudent, Long schoolId){
+        String[] tableHeader;
+        LinkedHashMap<String, List<Result>> tableContent = new LinkedHashMap<>();
+        for(StudentDto student: studentService.getStudentsByClass(classOfStudent, schoolId)){
+            tableContent.put(
+                    student.getId()+" "+student.getLastName()+ " " + student.getFirstName(),
+                    resultService.getClassResult(term, type, student.getId())
+            );
+
+        }
+        tableHeader = ResultService.subjects;
+        return new ResultRequest(tableHeader, tableContent);
+    }
 
 
-		return new ResponseEntity<>(detailList, HttpStatus.OK);
-	}
-	
-	private class StdResultDetails extends ResultDto{
-		String firstName;
-		String lastName;
+    public class ResultRequest {
+        private String[] tableHeader;
+        private LinkedHashMap<String, List<Result>> tableContent;
 
-		StdResultDetails(ResultDto result){
-			this.setTerm(result.getTerm());
-			this.setBasicScience(result.getBasicScience());
-			this.setCivicEducation(result.getCivicEducation());
-			this.setCRK(result.getCRK());
-			this.setEnglish(result.getEnglish());
-			this.setId(result.getId());
-			this.setMath(result.getMath());
-			this.setPHE(result.getPHE());
-			this.setSocialStudies(result.getSocialStudies());
-			this.setStudentId(result.getStudentId());
-			this.setType(result.getType());
-			this.firstName = studentService.getStudentDtoById(result.getStudentId()).getFirstName();
-			this.lastName = studentService.getStudentDtoById(result.getStudentId()).getLastName();
-		}
-		public String getFirstName() { return firstName;}
-		public String getLastName() {return lastName;}
+        public ResultRequest(String[] tableHeader, LinkedHashMap<String, List<Result>> tableContent) {
+            this.tableHeader = tableHeader;
+            this.tableContent = tableContent;
+        }
+        public LinkedHashMap<String, List<Result>> getTableContent() {
+            return tableContent;
+        }
+        public String[] getTableHeader() {
+            return tableHeader;
+        }
 
-	}
-	private class WrapperRequest{
-		private List<StdResultDetails> firstTerm, secondTerm, thirdTerm;
-		
-		WrapperRequest(List<StdResultDetails>... list){
-			this.firstTerm = list[0];
-			this.secondTerm = list[1];
-			this.thirdTerm = list[2];
-		}
-		public List<?> getFirstTerm(){return firstTerm;}
-		public List<?> getSecondTerm(){return secondTerm;}
-		public List<?> getThirdTerm(){return thirdTerm;}
-	}
+    }
 }

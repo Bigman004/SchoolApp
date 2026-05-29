@@ -38,5 +38,6 @@ public class Student {
 	private String classOfStudent;
 	@NotEmpty(message = "parent email cannot be empty")
 	private String parentEmail;
-	
+
+	private Long schoolId;  //reference fo school Id
 }

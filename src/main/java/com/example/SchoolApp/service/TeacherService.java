@@ -25,9 +25,10 @@ public class TeacherService {
 		this.publisher = publisher;
 
 	}
-	public void addTeacher(TeacherDto teacherDto) {
+	public void addTeacher(TeacherDto teacherDto, Long schoolId) {
 		String registrationP = "teacher22-22-";
 		Teacher teacher = ModelWrapper.mapToTeacher(teacherDto);
+		teacher.setSchoolId(schoolId);
 		teacherRepo.save(teacher);
 		publisher.publishEvent(new CreateUserEvent(teacher.getId(),
 				registrationP+teacher.getId(),
@@ -43,8 +44,26 @@ public class TeacherService {
 				.collect(Collectors.toList());
 
 	}
+
+	public List<TeacherDto> getAllTeachers(Long schoolId) {
+		return teacherRepo.findAllBySchoolId(schoolId).stream().
+				map(teacher -> ModelWrapper.mapToTeacherDto(teacher))
+				.collect(Collectors.toList());
+
+	}
+
 	public Teacher getTeacher(String registrationNumber) {
 
 		return teacherRepo.findByUsername(registrationNumber);
 	}
+
+	public TeacherDto getTeacherByClassName(String className) {
+		return ModelWrapper.mapToTeacherDto(teacherRepo.findByTeacherClass(className));
+	}
+	public TeacherDto getTeacherByClassName(String className, Long schoolId) {
+		return ModelWrapper.mapToTeacherDto(
+				teacherRepo.findBySchoolIdAndTeacherClass(schoolId, className)
+		);
+	}
+
 }
