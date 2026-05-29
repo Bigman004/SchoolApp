@@ -22,4 +22,5 @@ public class StudentDto {
 	private String LGA;
 	private String classOfStudent;
 	private String parentEmail;
+	private Long schoolId;
 }

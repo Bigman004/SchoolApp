@@ -4,18 +4,22 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@Entity
-@Table(name = "owner")
+@NoArgsConstructor
 @AllArgsConstructor
-public class Owner {
+@Entity
+@Table(name ="school")
+public class School {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String schoolName;
+    private String firstName;
+    private String lastName;
+    private String schoolCode;
+    private String schoolAddress;
     private String email;
-    public Owner(){}
-
 }

@@ -34,11 +34,13 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfig {
 	private CustomUserDetailService userDetailService;
 	private JwtFilter jwtFilter;
+	private MonitoringFilter monitoringFilter;
 	
 	@Autowired
-	public SecurityConfig(CustomUserDetailService userDetailService, JwtFilter jwtFilter) {
+	public SecurityConfig(CustomUserDetailService userDetailService, JwtFilter jwtFilter,  MonitoringFilter monitoringFilter) {
 		this.userDetailService = userDetailService;
 		this.jwtFilter = jwtFilter;
+		this.monitoringFilter = monitoringFilter;
 		
 	}
 	@Bean
@@ -47,12 +49,26 @@ public class SecurityConfig {
 				.csrf(customizer -> customizer.disable())
 				.cors(Customizer.withDefaults())
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("/login", "/create", "/debug", "/send_password_link", "/template/**")
+						.requestMatchers("/login", "/debug",
+								"/send_password_link", "/template/**",
+								"/monitor/*",
+								"/api/v1/auth/**",
+								"/v3/api-docs/**",
+								"/v3/api-docs",
+								"/v2/api-docs",
+								"/swagger-resources/**",
+								"/swagger-resources",
+								"/swagger-ui.html",
+								"/webjars/**",
+								"/configuration/ui",
+								"/configuration/security",
+								"/swagger-ui/**")
 						.permitAll().anyRequest().authenticated())
 				.httpBasic(customizer -> customizer.disable())
 				.sessionManagement(session ->
 					session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterAfter(monitoringFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
 	@Bean

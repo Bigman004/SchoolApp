@@ -17,4 +17,22 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 	boolean existsByStudentIdAndDate(@Param("studentId") Long studentId, @Param("date") LocalDate date);
 	
 	List<Attendance> findByTimestamp(LocalDate timestamp);
+	List<Attendance> findBySchoolIdAndClassNameAndTimestamp(
+			Long schoolId, String className, LocalDate date
+	);
+	List<Attendance> findBySchoolIdAndClassName(Long schoolId, String className);
+
+	@Query(value = "SELECT COUNT(*) " +
+			"FROM (" +
+			"SELECT DISTINCT a.timestamp FROM Attendance a" +
+			" WHERE school_Id = :schoolId)", nativeQuery = true)
+	Integer countDistinctSchoolId(@Param("schoolId")Long schoolId);
+
+
+	@Query(value = "SELECT COUNT(*)" +
+			"FROM(" +
+			"SELECT DISTINCT a.timestamp FROM Attendance a" +
+			" WHERE school_id = :schoolId AND class_name = :className AND " +
+			"status = true)", nativeQuery = true)
+	int countDistinctSchoolIdAndClass(@Param("schoolId")Long schoolId, @Param("className")String className);
 }

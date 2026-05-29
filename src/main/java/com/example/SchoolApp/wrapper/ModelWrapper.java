@@ -1,7 +1,9 @@
 package com.example.SchoolApp.wrapper;
 
+import com.example.SchoolApp.dto.SchoolDto;
 import com.example.SchoolApp.dto.StudentDto;
 import com.example.SchoolApp.dto.TeacherDto;
+import com.example.SchoolApp.model.School;
 import com.example.SchoolApp.model.Student;
 import com.example.SchoolApp.model.Teacher;
 
@@ -15,7 +17,9 @@ public class ModelWrapper {
                 .stateOfOrigin(std.getStateOfOrigin())
                 .parentPhone(std.getParentPhone())
                 .homeAddress(std.getHomeAddress())
+                        .parentEmail(std.getParentEmail())
                         .classOfStudent(std.getClassOfStudent())
+                        .schoolId(std.getSchoolId())
                 .LGA(std.getLGA())
                         .regNumber(std.getRegNumber())
                 .build();
@@ -25,7 +29,9 @@ public class ModelWrapper {
         student.setHomeAddress(std.getHomeAddress());
         student.setFirstName(std.getFirstName());
         student.setLastName(std.getLastName());
+        student.setSchoolId(std.getSchoolId());
         student.setLGA(std.getLGA());
+        student.setParentEmail(std.getParentEmail());
         student.setDateOfBirth(std.getDateOfBirth());
         student.setParentPhone(std.getParentPhone());
         student.setRegNumber(std.getRegNumber());
@@ -49,6 +55,24 @@ public class ModelWrapper {
                 .teacherClass(teacher.getTeacherClass())
                 .username(teacher.getUsername())
                 .Id(teacher.getId())
+                .build();
+    }
+    static public SchoolDto mapToSchoolDto(School school) {
+        return SchoolDto.builder()
+                .id(school.getId())
+                .schoolName(school.getSchoolName())
+                .schoolAddress(school.getSchoolAddress())
+                .schoolCode(school.getSchoolCode())
+                .build();
+    }
+    static public School mapToSchool(SchoolDto schoolDto) {
+        return School.builder()
+                .schoolAddress(schoolDto.getSchoolAddress())
+                .schoolCode(schoolDto.getSchoolCode())
+                .schoolName(schoolDto.getSchoolName())
+                .lastName(schoolDto.getLastName())
+                .firstName(schoolDto.getFirstName())
+                .email(schoolDto.getEmail())
                 .build();
     }
 }

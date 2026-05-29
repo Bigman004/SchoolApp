@@ -5,41 +5,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.SchoolApp.dto.TeacherDto;
+import com.example.SchoolApp.model.Attendance;
 import com.example.SchoolApp.security.SecurityUtill;
-import com.example.SchoolApp.service.OwnerService;
+import com.example.SchoolApp.service.*;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.SchoolApp.dto.StudentDto;
-import com.example.SchoolApp.service.StudentService;
-import com.example.SchoolApp.service.TeacherService;
 
 @RestController
 @RequestMapping("/api")
 public class TeacherRestController {
 	
-	private StudentService studentService;
-	private TeacherService teacherService;
-	private OwnerService ownerService;
+	private final StudentService studentService;
+	private final TeacherService teacherService;
+	private final UserService userService;
+	private final AttendanceService attendanceService;
+	private final ResultService resultService;
+
 
 	@Autowired
 	public TeacherRestController(StudentService studentService,
-	                             TeacherService teacherService, OwnerService ownerService) {
+	                             TeacherService teacherService,  UserService userService,
+								 AttendanceService attendanceService, ResultService resultService) {
 		this.studentService = studentService;
 		this.teacherService = teacherService;
+		this.userService = userService;
+		this.attendanceService = attendanceService;
+		this.resultService = resultService;
 	}
 
 	@Secured("ADMIN")
 	@PostMapping("/Admin/save_teacher")
 	public String saveTeacher(@RequestBody TeacherDto teacher){
-		teacherService.addTeacher(teacher);
+		String username = SecurityUtill.getSessionLoader();
+		Long schoolId = userService.findByUserName(username).getReferenceID();
+		teacherService.addTeacher(teacher, schoolId);
 		return HttpStatus.ACCEPTED.toString();
 	}
 	@GetMapping("/view")
@@ -61,23 +66,68 @@ public class TeacherRestController {
 	public ResponseEntity<?> adminPageView(){
 		String username = SecurityUtill.getSessionLoader();
 		System.out.println(username);
-		return new ResponseEntity<>(teacherService.getAllTeachers()
-				.stream().map(teacher -> new OwnerRequestTeachers(
-						studentService.getclassSize(teacher.getTeacherClass())
-						,teacher)).
+		Long schoolId = userService.findByUserName(username).getReferenceID();
+
+		return new ResponseEntity<>(teacherService.getAllTeachers(schoolId)
+				.stream().map(
+						teacher -> new OwnerRequestTeachers(
+								studentService.getclassSize(teacher.getTeacherClass(), schoolId),
+								teacher,
+								attendanceService.amountOfDay(schoolId))
+				).
 						collect(Collectors.toList()), HttpStatus.OK);
 	}
 
+	@GetMapping("/class_page/{className}")
+	@Secured("ADMIN")
+	public ResponseEntity<?> classPageView(@PathVariable String className){
+		String username = SecurityUtill.getSessionLoader();
+		Long schoolId = userService.findByUserName(username).getReferenceID();
+		return new ResponseEntity<>(
+				new OwnerRequestClassData(
+				className,
+				studentService.getStudentsByClass(className,  schoolId),
+				teacherService.getTeacherByClassName(className, schoolId),
+						attendanceService.getAverageAttendanceDate(className, schoolId),
+						resultService.getAverageScore(className, schoolId)
 
-	private class OwnerRequestTeachers {
+				),
+				HttpStatus.OK
+		);
+	}
+
+	@Getter
+	private static class OwnerRequestTeachers {
 		TeacherDto teacher;
 		int numberOfStudents;
+		int schoolOpens;
+
 		public OwnerRequestTeachers(int numberOfStudents,
-									TeacherDto teacher) {
+									TeacherDto teacher, int schoolOpens) {
+
 			this.numberOfStudents = numberOfStudents;
 			this.teacher = teacher;
+			this.schoolOpens = schoolOpens;
 		}
-		public int getNumberOfStudents() {return numberOfStudents;}
-		public TeacherDto getTeacher() {return teacher;}
 	}
+	@Getter
+    private static class OwnerRequestClassData{
+		String className;
+		List<StudentDto> students;
+		TeacherDto teacher;
+		int averageAttendance;
+		double averageResult;
+		public OwnerRequestClassData(String className,
+									 List<StudentDto> students,
+									 TeacherDto teacher,
+									 int averageAttendance,
+									 double averageResult
+		) {
+			this.className = className;
+			this.teacher = teacher;
+			this.students = students;
+			this.averageAttendance = averageAttendance;
+			this.averageResult = averageResult;
+		}
+    }
 }

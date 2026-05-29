@@ -2,12 +2,10 @@ package com.example.SchoolApp.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.SchoolApp.SchoolModels;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +35,8 @@ public class AttendanceService {
 	    Student student = studentRepo.findById(studentId)
 	        .orElseThrow(() -> new EntityNotFoundException("Student not found: " + studentId));
 
+
+
 	    LocalDateTime now = LocalDateTime.now();
 	    LocalDate today = now.toLocalDate();
 
@@ -51,6 +51,8 @@ public class AttendanceService {
 	    attendance.setRemarks(remark);
 	    attendance.setTimestamp(today);
 	    attendance.setStatus(attend);
+		attendance.setClassName(student.getClassOfStudent());
+		attendance.setSchoolId(student.getSchoolId());
 	    attendanceRepository.save(attendance);
 
 	    return true;
@@ -89,8 +91,24 @@ public class AttendanceService {
 	public List<AttendanceDto> getAttendanceDate(LocalDate date) {
 		List<Attendance> list = attendanceRepository.findByTimestamp(date);
 		return list.stream()
-				.map(attendance -> mapToAttendanceDto(attendance))
+				.map(this::mapToAttendanceDto)
 				.collect(Collectors.toList());
 	}
-	
+	public List<AttendanceDto> getAttendanceDate(LocalDate date, Long schoolId, String className) {
+		List<Attendance> list = attendanceRepository
+				.findBySchoolIdAndClassNameAndTimestamp(schoolId, className, date);
+		return list.stream()
+				.map(this::mapToAttendanceDto)
+				.collect(Collectors.toList());
+	}
+	public  Integer amountOfDay(Long schoolId) {
+		return attendanceRepository.countDistinctSchoolId(schoolId);
+	}
+	public int getAverageAttendanceDate(
+			String className, Long schoolId
+	) {
+		int classAttendance = attendanceRepository
+				.countDistinctSchoolIdAndClass(schoolId, className);
+		return (classAttendance / amountOfDay(schoolId)) * 100;
+	}
 }

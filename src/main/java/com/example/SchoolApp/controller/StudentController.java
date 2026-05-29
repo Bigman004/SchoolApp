@@ -11,12 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.SchoolApp.dto.DateTransferDto;
 import com.example.SchoolApp.dto.StudentDto;
@@ -48,7 +43,8 @@ public class StudentController {
 	public ResponseEntity<?> teacherPage() {
 		String username = SecurityUtill.getSessionLoader();
 		String studentClass = teacherService.getTeacher(username).getTeacherClass();
-		ArrayList<StudentDto> studentList = studentService.StudentList(studentClass);
+		Long schoolId = teacherService.getTeacher(username).getSchoolId();
+		ArrayList<StudentDto> studentList = studentService.StudentList(studentClass, schoolId);
 		String registrationNumber = SecurityUtill.getSessionLoader();
 		return new ResponseEntity<>(new WrapperRequest(studentList,
 				teacherService.getTeacher(registrationNumber)), HttpStatus.OK);
@@ -71,11 +67,13 @@ public class StudentController {
 	public ResponseEntity<?> addNewStudent(@Valid @RequestBody StudentDto student,
 			BindingResult result) {
 		String registrationNumber = SecurityUtill.getSessionLoader();
+		Long schoolId = teacherService.getTeacher(registrationNumber).getSchoolId();
 		if(result.hasErrors()) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		Teacher teacher = teacherService.getTeacher(registrationNumber);
 		student.setClassOfStudent(teacher.getTeacherClass());
+		student.setSchoolId(schoolId);
 		studentService.addStudent(student);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
@@ -118,14 +116,22 @@ public class StudentController {
 	@Secured("TEACHER")
 	@PostMapping("attendance/date")
 	public ResponseEntity<?> reviewAttendanceByDate(@RequestBody DateTransferDto date){
-		System.out.println(date.getYear() + "-" + date.getMonth()+ "-" + date.getDay());
+		String username = SecurityUtill.getSessionLoader();
+		String studentClass = teacherService.getTeacher(username).getTeacherClass();
+		Long schoolId = teacherService.getTeacher(username).getSchoolId();
 		LocalDate specific = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
 		if(specific.isBefore(LocalDate.now()) || specific.isEqual(LocalDate.now())) {
-			System.out.println(specific);
-			return new ResponseEntity<>(attendanceService.getAttendanceDate(specific), HttpStatus.ACCEPTED);
+			return new ResponseEntity<>(attendanceService.getAttendanceDate(
+					specific, schoolId, studentClass),
+					HttpStatus.ACCEPTED);
 		}
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		
+	}
+	@DeleteMapping("/delete/{studentId}")
+	public ResponseEntity<?> deleteStudent(@PathVariable("studentId") Long studentId) {
+		studentService.deleteByStudentId(studentId);
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 	
 	private class WrapperRequest{
