@@ -27,7 +27,7 @@ public class LinkService {
 
     private LinkRepository linkRepository;
     @Autowired
-    public void setLinkRepository(LinkRepository linkRepository) {
+    public LinkService(LinkRepository linkRepository) {
         this.linkRepository = linkRepository;
     }
 
