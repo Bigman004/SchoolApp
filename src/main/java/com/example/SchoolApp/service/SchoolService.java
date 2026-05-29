@@ -39,6 +39,6 @@ public class SchoolService {
     }
 
     public School getSchool(String registrationNumber) {
-        return schoolRepository.findbyUsername(registrationNumber);
+        return schoolRepository.findByUsername(registrationNumber);
     }
 }
