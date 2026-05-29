@@ -16,9 +16,6 @@ jobs:
         distribution: 'zulu'
         cache: maven
     - name: Build Application
-      env:
-        DB_USERNAME: ${{secrets.DB_USERNAME}}
-        DB_PASSWORD: ${{secrets.DB_PASSWORD}}
       run: >
         mvn clean install
         -DDB_PASSWORD=${{secrets.DB_PASSWORD}}
