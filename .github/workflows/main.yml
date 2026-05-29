@@ -19,7 +19,11 @@ jobs:
       env:
         DB_USERNAME: ${{secrets.DB_USERNAME}}
         DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-      run: mvn clean install -DskipTests
+      run: >
+        mvn clean install
+        -DDB_PASSWORD=${{secrets.DB_PASSWORD}}
+        -DDB_USERNAME=${{secrets.DB_USERNAME}}
+        -DSHARED_KEY=${{secrets.SHARED_KEY}}
     - name: Build image
       run: docker build -t bigman004/java-application:latest .
     - name: login

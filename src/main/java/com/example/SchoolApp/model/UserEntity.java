@@ -38,4 +38,5 @@ public class UserEntity {
 			)
 	private Role role;
 	private boolean login;
+
 }

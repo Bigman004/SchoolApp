@@ -60,6 +60,8 @@ public class UserService {
 			user.setRole(role);
 			user.setLogin(false);
 			user.setReferenceID(event.referenceId());
+				if(userRepository.existsByRegistrationNumber("DEVELOPER"))
+					return;
 			userRepository.save(user);
 		}
 	}

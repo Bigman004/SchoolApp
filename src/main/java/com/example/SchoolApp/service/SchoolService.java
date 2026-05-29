@@ -37,4 +37,8 @@ public class SchoolService {
     public String generateUsername(String name) {
         return name + UUID.randomUUID().toString().substring(0, 5);
     }
+
+    public School getSchool(String registrationNumber) {
+        return schoolRepository.findbyRegistrationNumber(registrationNumber);
+    }
 }
