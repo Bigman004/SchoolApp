@@ -5,19 +5,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.SchoolApp.dto.TeacherDto;
-import com.example.SchoolApp.model.Teacher;
 import com.example.SchoolApp.security.SecurityUtill;
 import com.example.SchoolApp.service.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import com.example.SchoolApp.dto.StudentDto;
 
 @RestController
