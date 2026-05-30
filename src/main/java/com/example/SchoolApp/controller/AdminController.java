@@ -5,39 +5,34 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.SchoolApp.dto.TeacherDto;
-import com.example.SchoolApp.model.Attendance;
+import com.example.SchoolApp.model.Teacher;
 import com.example.SchoolApp.security.SecurityUtill;
 import com.example.SchoolApp.service.*;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.SchoolApp.dto.StudentDto;
 
 @RestController
 @RequestMapping("/api")
-public class TeacherRestController {
+@AllArgsConstructor
+public class AdminController {
 	
 	private final StudentService studentService;
 	private final TeacherService teacherService;
 	private final UserService userService;
 	private final AttendanceService attendanceService;
 	private final ResultService resultService;
+	private final SchoolService schoolService;
 
 
-	@Autowired
-	public TeacherRestController(StudentService studentService,
-	                             TeacherService teacherService,  UserService userService,
-								 AttendanceService attendanceService, ResultService resultService) {
-		this.studentService = studentService;
-		this.teacherService = teacherService;
-		this.userService = userService;
-		this.attendanceService = attendanceService;
-		this.resultService = resultService;
-	}
 
 	@Secured("ADMIN")
 	@PostMapping("/Admin/save_teacher")
@@ -46,6 +41,21 @@ public class TeacherRestController {
 		Long schoolId = userService.findByUserName(username).getReferenceID();
 		teacherService.addTeacher(teacher, schoolId);
 		return HttpStatus.ACCEPTED.toString();
+	}
+	@Secured("ADMIn")
+	@PostMapping("/add_student")
+	public ResponseEntity<?> addNewStudent(@Valid @RequestBody StudentDto student,
+	                                       BindingResult result) {
+		String registrationNumber = SecurityUtill.getSessionLoader();
+		Long schoolId = schoolService.(registrationNumber).getSchoolId();
+		if(result.hasErrors()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		Teacher teacher = teacherService.getTeacher(registrationNumber);
+		student.setClassOfStudent(teacher.getTeacherClass());
+		student.setSchoolId(schoolId);
+		studentService.addStudent(student);
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 	@GetMapping("/view")
 	public ResponseEntity<ArrayList<StudentDto>> teacherView(){
@@ -97,11 +107,10 @@ public class TeacherRestController {
 	}
 
 	@Getter
-	private static class OwnerRequestTeachers {
+	private static class OwnerRequestTeachers{
 		TeacherDto teacher;
 		int numberOfStudents;
 		int schoolOpens;
-
 		public OwnerRequestTeachers(int numberOfStudents,
 									TeacherDto teacher, int schoolOpens) {
 
@@ -111,23 +120,12 @@ public class TeacherRestController {
 		}
 	}
 	@Getter
+	@AllArgsConstructor
     private static class OwnerRequestClassData{
 		String className;
 		List<StudentDto> students;
 		TeacherDto teacher;
 		int averageAttendance;
 		double averageResult;
-		public OwnerRequestClassData(String className,
-									 List<StudentDto> students,
-									 TeacherDto teacher,
-									 int averageAttendance,
-									 double averageResult
-		) {
-			this.className = className;
-			this.teacher = teacher;
-			this.students = students;
-			this.averageAttendance = averageAttendance;
-			this.averageResult = averageResult;
-		}
     }
 }
