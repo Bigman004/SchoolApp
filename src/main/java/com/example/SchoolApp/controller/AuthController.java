@@ -44,7 +44,7 @@ public class AuthController {
 	public ResponseEntity<?> sendPasswordLink(@RequestParam String username) {
 		String result = "";
 		String randomtoken = UUID.randomUUID().toString();
-		String link =  "http://localhost:8080/template/send_link/"+ randomtoken;
+		String link =  "https://java-application-latest-ywhd.onrender.com/template/send_link/"+ randomtoken;
 		try{
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
 			byte[] hash = sha.digest(randomtoken.getBytes());
@@ -57,6 +57,8 @@ public class AuthController {
 			String email = null;
 			if (userService.getUserRole(username).equals("TEACHER")) {
 				email = teacherService.getTeacher(username).getEmail();
+			} else if (userService.getUserRole(username).equals("ADMIN")) {
+				email = schoolService.getSchool(username).getEmail();
 			}
 			linkService.save(LinkHash.builder()
 					.email(email)
@@ -119,6 +121,7 @@ public class AuthController {
 			return new ResponseEntity<String>("change password success", HttpStatus.OK);
 		return new ResponseEntity<>("change password failed", HttpStatus.FORBIDDEN);
 	}
+	@Secured("DEVELOPER")
 	@PostMapping("developer/add_school")
 	public ResponseEntity<?> addSchool(@RequestBody SchoolDto schoolDto) {
 		return new ResponseEntity<>(schoolService.save(schoolDto),HttpStatus.OK);

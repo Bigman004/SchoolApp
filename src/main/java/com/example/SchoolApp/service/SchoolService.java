@@ -26,15 +26,19 @@ public class SchoolService {
 
     public String save(SchoolDto schoolDto) {
         School school = ModelWrapper.mapToSchool(schoolDto);
-        school.setSchoolCode(UUID.randomUUID().toString());
-        schoolRepository.save(school);
         String username = generateUsername(school.getFirstName());
+        school.setSchoolCode(UUID.randomUUID().toString());
+        school.setUsername(username);
+        schoolRepository.save(school);
         publisher.publishEvent(new CreateUserEvent(school.getId(), username,
                 "ADMIN", "default_password"));
-
         return username;
     }
     public String generateUsername(String name) {
         return name + UUID.randomUUID().toString().substring(0, 5);
+    }
+
+    public School getSchool(String registrationNumber) {
+        return schoolRepository.findByUsername(registrationNumber);
     }
 }

@@ -19,6 +19,6 @@ public interface ResultRepository extends JpaRepository<Result, Long> {
 	@Query(value = "SELECT AVG(score) FROM Result r " +
 			"WHERE class_of_student = :className AND term = :term" +
 			" AND school_id = :schoolId", nativeQuery = true)
-	double sumTestScore(@Param("className") String className,
+	Double sumTestScore(@Param("className") String className,
 						 @Param("term") String term, @Param("schoolId") Long schoolId);
 }

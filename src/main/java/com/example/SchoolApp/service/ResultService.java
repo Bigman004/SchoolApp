@@ -101,7 +101,7 @@ public class ResultService {
 				.collect(Collectors.toList());
 	}
 
-	public double getAverageScore(String className, Long schoolId) {
+	public Double getAverageScore(String className, Long schoolId) {
 		return resultRepository.sumTestScore(className, SchoolModels.CURRENT_TERM, schoolId);
 	}
 	public boolean saveResult(Long studentId, String term,

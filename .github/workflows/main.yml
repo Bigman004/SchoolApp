@@ -16,7 +16,12 @@ jobs:
         distribution: 'zulu'
         cache: maven
     - name: Build Application
-      run: mvn -B package --file pom.xml
+      env:
+        SHARED_KEY: ${{ secrets.SHARED_KEY }}
+      run: >
+        mvn clean install
+        -DDB_PASSWORD=${{secrets.DB_PASSWORD}}
+        -DDB_USERNAME=${{secrets.DB_USERNAME}}
     - name: Build image
       run: docker build -t bigman004/java-application:latest .
     - name: login

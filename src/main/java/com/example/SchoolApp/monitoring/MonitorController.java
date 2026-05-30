@@ -55,6 +55,7 @@ public class MonitorController {
     @Secured("DEVELOPER")
     @GetMapping("/user_size")
     public ResponseEntity<?> userSize(){
+
         return new ResponseEntity<>(userService.listUser().size(), HttpStatus.OK);
     }
     @GetMapping("/start-monitoring")
@@ -65,6 +66,7 @@ public class MonitorController {
                 "DEVELOPER",
                 "developer_password"
         ));
+
         return;
     }
     @PostMapping("/save_school")

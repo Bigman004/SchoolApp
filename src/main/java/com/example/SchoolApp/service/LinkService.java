@@ -13,10 +13,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
+import java.util.Base64;
 
 /***@Author Ayomide
  * send links to the mailing api and save the reset links to the database
@@ -25,7 +27,12 @@ import java.security.MessageDigest;
 @Slf4j
 public class LinkService {
 
+    @Value("${shared.key}")
+    private String sharedKey;
+
     private LinkRepository linkRepository;
+
+
     @Autowired
     public LinkService(LinkRepository linkRepository) {
         this.linkRepository = linkRepository;
@@ -58,10 +65,13 @@ public class LinkService {
         );
 
         try {
-            HttpPost post = new HttpPost("http://localhost:8081/send_password_link");
+            String credentials = "user:" + sharedKey;
+            String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+            HttpPost post = new HttpPost("https://api-gateway-sxrh.onrender.com/mailing-service/send_password_link");
             Gson gson = new Gson();
             StringEntity stringEntity = new StringEntity(gson.toJson(request), "UTF-8");
             CloseableHttpClient httpclient = HttpClients.createDefault();
+            post.setHeader("Authorization", "Basic " + encodedCredentials);
             post.setHeader("Content-Type", "application/json");
             post.setEntity(stringEntity);
             httpclient.execute(post);

@@ -42,17 +42,16 @@ public class AdminController {
 		teacherService.addTeacher(teacher, schoolId);
 		return HttpStatus.ACCEPTED.toString();
 	}
-	@Secured("ADMIn")
+	@Secured("ADMIN")
 	@PostMapping("/add_student")
 	public ResponseEntity<?> addNewStudent(@Valid @RequestBody StudentDto student,
-	                                       BindingResult result) {
+	                                       BindingResult result, @RequestParam String classOfStudent) {
 		String registrationNumber = SecurityUtill.getSessionLoader();
-		Long schoolId = schoolService.(registrationNumber).getSchoolId();
+		Long schoolId = schoolService.getSchool(registrationNumber).getId();
 		if(result.hasErrors()) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		Teacher teacher = teacherService.getTeacher(registrationNumber);
-		student.setClassOfStudent(teacher.getTeacherClass());
+		student.setClassOfStudent(classOfStudent);
 		student.setSchoolId(schoolId);
 		studentService.addStudent(student);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);

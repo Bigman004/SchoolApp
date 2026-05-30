@@ -6,4 +6,6 @@ import com.example.SchoolApp.model.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	UserEntity findByRegistrationNumber(String registrationNumber);
+
+    boolean existsByRegistrationNumber(String registrationNumber);
 }
