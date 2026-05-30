@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.SchoolApp.dto.TeacherDto;
-import com.example.SchoolApp.model.Attendance;
 import com.example.SchoolApp.security.SecurityUtill;
 import com.example.SchoolApp.service.*;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import com.example.SchoolApp.dto.StudentDto;
 
 @RestController
 @RequestMapping("/api")
-public class TeacherRestController {
+public class AdminController {
 	
 	private final StudentService studentService;
 	private final TeacherService teacherService;
@@ -29,9 +28,9 @@ public class TeacherRestController {
 
 
 	@Autowired
-	public TeacherRestController(StudentService studentService,
-	                             TeacherService teacherService,  UserService userService,
-								 AttendanceService attendanceService, ResultService resultService) {
+	public AdminController(StudentService studentService,
+	                       TeacherService teacherService, UserService userService,
+	                       AttendanceService attendanceService, ResultService resultService) {
 		this.studentService = studentService;
 		this.teacherService = teacherService;
 		this.userService = userService;
