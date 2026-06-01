@@ -105,7 +105,7 @@ public class ResultService {
 		return resultRepository.sumTestScore(className, SchoolModels.CURRENT_TERM, schoolId);
 	}
 	public boolean saveResult(Long studentId, String term,
-	                       String type, Map<String, Integer> body) {
+	                          String type, Map<String, Integer> body) {
 		if(!(body.size() == subjects.length &&
 				body.keySet().containsAll(Arrays.asList(subjects))) ) {
 			return false;
@@ -125,11 +125,21 @@ public class ResultService {
 		resultList = new ArrayList<>(resultMap.values());
 		resultRepository.saveAll(
 				resultList.stream().map(
-                this::mapToResult).
-				collect(Collectors.toList())
+								this::mapToResult).
+						collect(Collectors.toList())
 		);
 		return true;
 	}
+	public Map<String, Integer> getResult(Long studentId, String term, String type) {
+		Map<String, Integer> result = new LinkedHashMap<>();
+		resultRepository
+				.findAllByStudentIdAndTermAndType(studentId, term, type)
+				.forEach(
+						result1 -> result.put(result1.getSubjectName(), result1.getScore())
+				);
+		return result;
+	}
+
 	/**
 	 * -------------------PRIVATE METHOD--------------------------------------------------
 	 */
@@ -144,16 +154,16 @@ public class ResultService {
 	 * @param type
 	 */
 	private void saveSubjects(Long schoolId, Long studentId,
-							  String classOfStudent, String term, String type) {
+	                          String classOfStudent, String term, String type) {
 		List<Result> results = new ArrayList<>();
 		for(String s : subjects){
 			results.add(Result.builder()
-							.schoolId(schoolId)
+					.schoolId(schoolId)
 					.studentId(studentId)
 					.term(term)
 					.classOfStudent(classOfStudent)
-							.subjectName(s)
-							.type(type)
+					.subjectName(s)
+					.type(type)
 					.build());
 		}
 		resultRepository.saveAll(results);
