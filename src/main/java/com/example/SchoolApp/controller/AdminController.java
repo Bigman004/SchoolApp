@@ -121,7 +121,7 @@ public class AdminController {
 		String className;
 		List<StudentDto> students;
 		TeacherDto teacher;
-		int averageAttendance;
-		double averageResult;
+		Integer averageAttendance;
+		Double averageResult;
     }
 }
