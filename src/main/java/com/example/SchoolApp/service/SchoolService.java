@@ -41,4 +41,8 @@ public class SchoolService {
     public School getSchool(String registrationNumber) {
         return schoolRepository.findByUsername(registrationNumber);
     }
+
+    public String find(Long schoolId) {
+        return schoolRepository.findById(schoolId).get().getSchoolName();
+    }
 }

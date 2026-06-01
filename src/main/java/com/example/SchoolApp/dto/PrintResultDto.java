@@ -11,5 +11,6 @@ public class PrintResultDto {
     private String studentFirstName;
     private String studentLastName;
     private String studentClass;
+
     private String regNumber;
 }
