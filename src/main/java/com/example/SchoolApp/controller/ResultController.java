@@ -1,15 +1,22 @@
 package com.example.SchoolApp.controller;
 
+import com.example.SchoolApp.SchoolModels;
+import com.example.SchoolApp.dto.PrintResultDto;
 import com.example.SchoolApp.dto.ResultDto;
 import com.example.SchoolApp.dto.StudentDto;
 import com.example.SchoolApp.model.Result;
+import com.example.SchoolApp.model.Student;
 import com.example.SchoolApp.security.SecurityUtill;
 import com.example.SchoolApp.service.ResultService;
+import com.example.SchoolApp.service.SchoolService;
 import com.example.SchoolApp.service.StudentService;
 import com.example.SchoolApp.service.TeacherService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,18 +28,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("result")
+@AllArgsConstructor
+@Slf4j
 public class  ResultController {
 
     private ResultService resultService;
     private StudentService studentService;
     private TeacherService teacherService;
-
-    @Autowired
-    public ResultController(ResultService resultService, StudentService studentService,  TeacherService teacherService) {
-        this.resultService = resultService;
-        this.studentService = studentService;
-        this.teacherService = teacherService;
-    }
+    private SchoolService schoolService;
 
     @GetMapping("/")
     public ResponseEntity<ResultRequest> getClassResult(
@@ -76,6 +79,36 @@ public class  ResultController {
         resultService.saveResult(studentId, term, type, body);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping("/{studentId}/{term}")
+    @Secured("TEACHER")
+    public ResponseEntity<?> printResult(
+            @PathVariable Long studentId,
+            @PathVariable String term
+    ){
+        System.out.println(studentId);
+        System.out.println(term);
+        try {
+            StudentDto student = studentService.getStudentDtoById(studentId);
+            return new ResponseEntity<>(
+                    PrintResultDto.builder()
+                            .examResult(resultService.getResult(studentId, term, "exam"))
+                            .testResult(resultService.getResult(studentId, term, "test"))
+                            .regNumber(student.getRegNumber())
+                            .studentClass(student.getClassOfStudent())
+                            .schoolName(schoolService.find(student.getSchoolId()))
+                            .studentFirstName(student.getFirstName())
+                            .studentLastName(student.getLastName())
+                            .build(),
+                    HttpStatus.OK
+
+            );
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("error processing request",HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     private ResultRequest getStudentResult(String term, String type, String classOfStudent, Long schoolId){
         String[] tableHeader;
