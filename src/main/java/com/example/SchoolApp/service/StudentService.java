@@ -94,22 +94,9 @@ public class StudentService {
 		return;
 	}
 	public StudentDto getStudentDtoById(Long Id) {
-		Student std = studentRepo.findById(Id).get();
-		return StudentDto.builder()
-				.Id(std.getId())
-				.dateOfBirth(std.getDateOfBirth())
-				.firstName(std.getFirstName())
-				.LastName(std.getLastName())
-				.stateOfOrigin(std.getStateOfOrigin())
-				.parentPhone(std.getParentPhone())
-				.homeAddress(std.getHomeAddress())
-				.classOfStudent(std.getClassOfStudent())
-				.regNumber(std.getRegNumber())
-				.LGA(std.getLGA())
-				.build();
-
+		Student std = studentRepo.findById(Id).orElseThrow();
+		return ModelWrapper.mapToStudentDto(std);
 	}
-
 
 	public int getclassSize(String classOfStudent, Long schoolId) {
 		return  studentRepo.findByClassOfStudentAndSchoolId(classOfStudent, schoolId).size();
