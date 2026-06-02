@@ -30,6 +30,8 @@ public class MonitoringFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
             boolean success = false;
+            if(request.getRequestURI().equals("/debug") || request.getRequestURI().equals("/"))
+                return;
             chain.doFilter(request, response);
             String username = "";
             if(containsAuthentication(request) && !request.getRequestURI().equals("/login")) {
