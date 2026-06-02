@@ -232,5 +232,5 @@ The repo includes a `.render.yaml` file that automates deployment.
 ## 📝 Notes
 
 - This is a **monolithic application** — all features (auth, teachers, students, attendance, grades) live in one Spring Boot project.
-- The frontend is a **separate Next.js app** deployed on Vercel, which consumes this backend's REST API.
+- The frontend is a **separate reactjs app** deployed on Vercel, which consumes this backend's REST API.
 - JWT tokens are used for stateless authentication — the backend does not store sessions.
