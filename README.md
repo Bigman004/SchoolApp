@@ -2,7 +2,7 @@
 
 A backend service for a school management portal built with **Spring Boot**. It powers a mobile/web frontend that lets **admins** manage teachers and students, and **teachers** manage their classes, attendance, and grades.
 
-> **Live Frontend:** Deployed at `*-ui-eight.vercel.app` (Next.js / React app)  
+> **Live Frontend:** Deployed at `https://school-ui-eight.vercel.app/` (Next.js / React app)  
 > **Backend:** Deployed on [Render](https://render.com) as a Java web service
 
 ---
@@ -225,7 +225,7 @@ The repo includes a `.render.yaml` file that automates deployment.
 
 ## 👤 Author
 
-**Bigman004** — [github.com/Bigman004](https://github.com/Bigman004)
+**Adediji Ayomide** — [github.com/Bigman004](https://github.com/Bigman004)
 
 ---
 
