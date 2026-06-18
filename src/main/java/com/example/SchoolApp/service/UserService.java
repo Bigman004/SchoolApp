@@ -3,6 +3,7 @@ package com.example.SchoolApp.service;
 import com.example.SchoolApp.events.CreateUserEvent;
 import com.example.SchoolApp.model.LinkHash;
 import com.example.SchoolApp.security.SecurityUtill;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -30,6 +31,7 @@ import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
+@Slf4j
 @Service
 public class UserService {
 	private UserRepository userRepository;
@@ -115,10 +117,15 @@ public class UserService {
 	}
 
 	public  boolean changePassword(String username, String password) {
-		UserEntity userEntity = userRepository.findByRegistrationNumber(username);
-		userEntity.setPassword(passwordEncoder.encode(password));
-		userRepository.save(userEntity);
-		return true;
+		try {
+			UserEntity userEntity = userRepository.findByRegistrationNumber(username);
+			userEntity.setPassword(passwordEncoder.encode(password));
+			userRepository.save(userEntity);
+			return true;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return false;
+		}
 	}
 
 	public UserEntity findByUserName(String username) {
